@@ -1,0 +1,139 @@
+import pygame
+
+# Initialisation de Pygame
+pygame.init()
+
+# Paramètres de la fenêtre
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Jeu avec Terrain")
+
+# Couleurs
+WHITE = (255, 255, 255)
+BROWN = (139, 69, 19)
+
+# Variables du personnage
+x, y = 375, 500  # Position initiale
+width, height = 50, 60  # Taille du personnage
+velocity = 7  # Vitesse du personnage
+jump_velocity = -10  # Vitesse du saut
+gravity = 0.8  # Gravité du personnage
+
+y_velocity = 0  # Vitesse verticale du personnage
+is_jumping = False
+
+# Chargement des sprites
+new_width = 64
+new_height = 64
+walk_right = [pygame.transform.scale(pygame.image.load(f'Hero/Run ({i}).png'), (new_width, new_height)) for i in range(1, 15)]
+walk_left = [pygame.transform.scale(pygame.image.load(f'Hero/Run ({i}).png'), (new_width, new_height)) for i in range(1, 15)]
+idle = [pygame.transform.scale(pygame.image.load(f'Hero/Idle ({i}).png'), (new_width, new_height)) for i in range(1, 15)]
+jump = [pygame.transform.scale(pygame.image.load(f'Hero/Jump ({i}).png'), (new_width, new_height)) for i in range(1, 17)]
+
+# Terrain
+terrain = [
+   pygame.Rect(0, 550, 1600, 50),
+   pygame.Rect(200, 450, 100, 20),
+   pygame.Rect(400, 350, 150, 20),
+   pygame.Rect(600, 250, 100, 20),
+   pygame.Rect(800, 450, 100, 20),
+   pygame.Rect(1000, 350, 150, 20),
+   pygame.Rect(1200, 250, 100, 20)
+]
+
+# Bot
+bot = pygame.Rect(400, 550, 40, 30)
+bot_speed = 3
+
+# Défilement
+scroll_x = 0
+clock = pygame.time.Clock()
+current_frame = 0
+idle_frame = 0
+idle_counter = 0
+is_walking = False
+facing_right = True
+
+running = True
+while running:
+    clock.tick(60)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        x -= velocity
+        is_walking = True
+        facing_right = False
+        if x < screen_width / 2 and scroll_x > 0:
+            scroll_x -= velocity
+            x += velocity
+    elif keys[pygame.K_RIGHT]:
+        x += velocity
+        is_walking = True
+        facing_right = True
+        if x > screen_width / 2 and scroll_x < terrain[-1].right - screen_width:
+            scroll_x += velocity
+            x -= velocity
+    else:
+        is_walking = False
+
+    # Gravité et saut
+    y_velocity += gravity
+    y += y_velocity
+    if not is_jumping and keys[pygame.K_SPACE]:
+        is_jumping = True
+        y_velocity = jump_velocity
+
+    hitbox = pygame.Rect(x, y, new_width, new_height)
+    for rect in terrain:
+        rect_scrolled = rect.move(-scroll_x, 0)
+        if hitbox.colliderect(rect_scrolled):
+            if y_velocity > 0:
+                y = rect_scrolled.top - new_height
+                y_velocity = 0
+                is_jumping = False
+            elif y_velocity < 0:
+                y_velocity = 0
+
+    if y + new_height > screen_height:
+        y = screen_height - new_height
+        y_velocity = 0
+        is_jumping = False
+
+    # Déplacement du bot
+    if abs(bot.x - x) <= 200:
+        if bot.x < x:
+            bot.x += bot_speed
+        elif bot.x > x:
+            bot.x -= bot_speed
+
+    # Affichage
+    screen.fill(WHITE)
+    for rect in terrain:
+        rect_scrolled = rect.move(-scroll_x, 0)
+        pygame.draw.rect(screen, BROWN, rect_scrolled)
+        pygame.draw.rect(screen, (0, 255, 0), rect_scrolled, 2)
+
+    if is_walking and not is_jumping:
+        current_frame = (current_frame + 1) % len(walk_right)
+        img = walk_right[current_frame] if facing_right else pygame.transform.flip(walk_right[current_frame], True, False)
+    elif is_jumping:
+        img = jump[min(len(jump) - 1, int(y_velocity * -1))]
+        if not facing_right:
+            img = pygame.transform.flip(img, True, False)
+    else:
+        idle_counter += 1
+        if idle_counter >= 5:
+            idle_counter = 0
+            idle_frame = (idle_frame + 1) % len(idle)
+        img = idle[idle_frame] if facing_right else pygame.transform.flip(idle[idle_frame], True, False)
+    
+    screen.blit(img, (x, y))
+    pygame.draw.rect(screen, (0, 0, 255), bot)
+    pygame.display.update()
+
+pygame.quit()
