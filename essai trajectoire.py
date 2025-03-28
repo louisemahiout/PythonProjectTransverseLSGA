@@ -123,9 +123,9 @@ while running:
                 dy = start_pos[1] - end_pos[1]
 
                 # Limiter la puissance max
-                power_factor = 7  # Augmenter le facteur de puissance pour permettre un tir plus fort
-                impulse_x = max(min(dx * power_factor, 2000), -2000)  # Plus de portée horizontale
-                impulse_y = max(min(dy * power_factor, 2000), -2000)  # Plus de hauteur verticale
+                power_factor = 10000 # Augmenter le facteur de puissance pour permettre un tir plus fort
+                impulse_x = max(min(dx * power_factor, 3000), -3000)  # Plus de portée horizontale
+                impulse_y = max(min(dy * power_factor, 3000), -3000)  # Plus de hauteur verticale
 
                 create_crabe(impulse_x, impulse_y)
 
