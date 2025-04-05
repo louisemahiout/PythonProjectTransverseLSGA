@@ -1,6 +1,5 @@
 # Importation du module pygame
 import pygame
-
 # Initialisation de pygame
 pygame.init()
 
