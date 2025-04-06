@@ -107,16 +107,9 @@ def run_game():
         pygame.Rect(0, screen_height - 20, 3000, 20),
         pygame.Rect(500, 420, 100, 20),
         pygame.Rect(700, 360, 100, 20),
-        pygame.Rect(900, 300, 100, 20),
-        pygame.Rect(1100, 240, 100, 20),
-        pygame.Rect(1300, 300, 100, 20),
-        pygame.Rect(1500, 360, 100, 20),
         pygame.Rect(1700, 420, 100, 20),
         pygame.Rect(1900, 360, 100, 20),
         pygame.Rect(2100, 300, 100, 20),
-        pygame.Rect(2300, 240, 100, 20),
-        pygame.Rect(2500, 300, 100, 20),
-        pygame.Rect(2700, 360, 100, 20)
     ]
 
     #position du joueur
