@@ -4,6 +4,10 @@ import pygame
 
 def show_menu():
     pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.music.load("assetsaffichage/musique.mp3")
+    pygame.mixer.music.play(-1)  # -1 = jouer en boucle
+    pygame.mixer.music.set_volume(0.2)  # Volume initial (entre 0.0 et 1.0)
     pygame.display.set_caption('Crabinator')
     screen = pygame.display.set_mode((725, 550))
 
@@ -51,6 +55,11 @@ def run_game():
     screen_height = 550
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Jeu avec Terrain")
+    background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
+    # Crée une version miroir (flip vertical)
+    flipped_bg = pygame.transform.flip(background, False, True)
+
+    background_width = background.get_width()
 
     # Couleurs
     WHITE = (255, 255, 255)
@@ -74,14 +83,16 @@ def run_game():
     new_height = 64  # Nouvelle hauteur de l'image
 
     # Chargement et redimensionnement des sprites à partir du dossier 'png'
-    walk_right = [pygame.transform.scale(pygame.image.load(f'Hero/Run ({i}).png'), (new_width, new_height)) for i in
-                  range(1, 15)]  # Images de marche droite
-    walk_left = [pygame.transform.scale(pygame.image.load(f'Hero/Run ({i}).png'), (new_width, new_height)) for i in
-                 range(1, 15)]  # Images de marche gauche
-    idle = [pygame.transform.scale(pygame.image.load(f'Hero/Idle ({i}).png'), (new_width, new_height)) for i in
-            range(1, 15)]  # Images d'attente
-    jump = [pygame.transform.scale(pygame.image.load(f'Hero/Jump ({i}).png'), (new_width, new_height)) for i in
-            range(1, 17)]  # Images du saut
+    walk_right = [
+        pygame.transform.scale(pygame.image.load(f'Hero/Run ({i}).png').convert_alpha(), (new_width, new_height)) for i
+        in range(1, 15)]
+    walk_left = [
+        pygame.transform.scale(pygame.image.load(f'Hero/Run ({i}).png').convert_alpha(), (new_width, new_height)) for i
+        in range(1, 15)]
+    idle = [pygame.transform.scale(pygame.image.load(f'Hero/Idle ({i}).png').convert_alpha(), (new_width, new_height))
+            for i in range(1, 15)]
+    jump = [pygame.transform.scale(pygame.image.load(f'Hero/Jump ({i}).png').convert_alpha(), (new_width, new_height))
+            for i in range(1, 17)]
 
     # Animation
     clock = pygame.time.Clock()
@@ -93,14 +104,23 @@ def run_game():
 
     # Définir le terrain avec hitboxes
     terrain = [
-        pygame.Rect(0, 550, 1600, 50),  # Sol plus long
-        pygame.Rect(200, 450, 100, 20),  # Plateforme
-        pygame.Rect(400, 350, 150, 20),  # Plateforme
-        pygame.Rect(600, 250, 100, 20),  # Plateforme
-        pygame.Rect(800, 450, 100, 20),  # Plateforme supplémentaire
-        pygame.Rect(1000, 350, 150, 20),  # Plateforme supplémentaire
-        pygame.Rect(1200, 250, 100, 20)  # Plateforme supplémentaire
+        pygame.Rect(0, screen_height - 20, 3000, 20),
+        pygame.Rect(500, 420, 100, 20),
+        pygame.Rect(700, 360, 100, 20),
+        pygame.Rect(900, 300, 100, 20),
+        pygame.Rect(1100, 240, 100, 20),
+        pygame.Rect(1300, 300, 100, 20),
+        pygame.Rect(1500, 360, 100, 20),
+        pygame.Rect(1700, 420, 100, 20),
+        pygame.Rect(1900, 360, 100, 20),
+        pygame.Rect(2100, 300, 100, 20),
+        pygame.Rect(2300, 240, 100, 20),
+        pygame.Rect(2500, 300, 100, 20),
+        pygame.Rect(2700, 360, 100, 20)
     ]
+
+    #position du joueur
+    x, y = 100, 436  # correspond à hauteur = 64 (500 - 64)
 
     # Variables pour le défilement de l'écran
     scroll_x = 0
@@ -182,14 +202,17 @@ def run_game():
                 if idle_frame >= len(idle):
                     idle_frame = 0
 
-        # Affichage des animations
-        screen.fill(WHITE)  # Fond blanc
+        # Affichage du fond en boucle
+        for i in range((screen_width + scroll_x) // background_width + 2):
+            x_bg = i * background_width - (scroll_x % background_width)
+            screen.blit(background, (x_bg, 0))
+            screen.blit(flipped_bg, (x_bg, background.get_height()))
 
         # Dessiner le terrain avec hitboxes
         for rect in terrain:
             rect_scrolled = rect.move(-scroll_x, 0)
-            pygame.draw.rect(screen, BROWN, rect_scrolled)
-            pygame.draw.rect(screen, (0, 255, 0), rect_scrolled, 2)  # Dessiner la hitbox en vert
+            pygame.draw.rect(screen, BROWN, rect_scrolled, border_radius=4)
+            pygame.draw.rect(screen, (0, 100, 0), rect_scrolled, 2, border_radius=4)
 
         if is_jumping:
             # Afficher l'animation du saut, inversée si le personnage regarde à gauche
