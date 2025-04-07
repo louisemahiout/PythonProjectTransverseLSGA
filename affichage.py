@@ -47,6 +47,51 @@ def show_menu():
                 if play_button_rect.collidepoint(event.pos):
                     return True  # Le joueur a cliqué sur PLAY
 
+
+def choose_level():
+    screen = pygame.display.set_mode((725, 550))
+    background = pygame.image.load("assetsaffichage/fond1.jpg").convert()
+
+    # Charger les boutons
+    level1_button = pygame.image.load("assetsaffichage/boutonplay.png").convert_alpha()
+    level1_button = pygame.transform.scale(level1_button, (300, 100))
+    level1_rect = level1_button.get_rect(center=(725 // 2, 250))
+
+    level2_button = pygame.image.load("assetsaffichage/boutonplay.png").convert_alpha()
+    level2_button = pygame.transform.scale(level2_button, (300, 100))
+    level2_rect = level2_button.get_rect(center=(725 // 2, 400))
+
+    font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 24)
+    title_text = font.render("CHOISIS TON NIVEAU", True, (0, 0, 0))
+    title_rect = title_text.get_rect(center=(725 // 2, 100))
+
+    running = True
+    while running:
+        screen.blit(background, (0, 0))
+
+        screen.blit(title_text, title_rect)
+        screen.blit(level1_button, level1_rect)
+        screen.blit(level2_button, level2_rect)
+
+        # Affichage des labels
+        label1 = font.render("NIVEAU 1", True, (255, 255, 255))
+        label2 = font.render("NIVEAU 2", True, (255, 255, 255))
+        screen.blit(label1, (level1_rect.centerx - label1.get_width() // 2, level1_rect.centery - 10))
+        screen.blit(label2, (level2_rect.centerx - label2.get_width() // 2, level2_rect.centery - 10))
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return None
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if level1_rect.collidepoint(event.pos):
+                    return 1
+                elif level2_rect.collidepoint(event.pos):
+                    return 2
+
+
 # Partie JEU PRINCIPAL
 
 def run_game():
@@ -104,12 +149,15 @@ def run_game():
 
     # Définir le terrain avec hitboxes
     terrain = [
-        pygame.Rect(0, screen_height - 20, 3000, 20),
+        pygame.Rect(0, screen_height - 20, 5000, 20),
         pygame.Rect(500, 420, 100, 20),
         pygame.Rect(700, 360, 100, 20),
         pygame.Rect(1700, 420, 100, 20),
         pygame.Rect(1900, 360, 100, 20),
         pygame.Rect(2100, 300, 100, 20),
+        pygame.Rect(2800, 420, 100, 20),
+        pygame.Rect(3000, 360, 100, 20),
+
     ]
 
     #position du joueur
@@ -240,5 +288,10 @@ def run_game():
 
 # === Lancement ===
 
+# === Lancement ===
 if show_menu():
-    run_game()
+    selected_level = choose_level()
+    if selected_level == 1:
+        run_game()
+    elif selected_level == 2:
+        run_game()  # On pourra remplacer ici par run_game_level2() plus tard
