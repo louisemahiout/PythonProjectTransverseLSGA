@@ -122,6 +122,10 @@ def run_game():
     flipped_bg = pygame.transform.flip(background, False, True)
 
     background_width = background.get_width()
+    menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
+    menu_button = pygame.transform.scale(menu_button, (150, 70))  # Ajuste la taille du bouton si nécessaire
+    menu_button_rect = menu_button.get_rect()
+    menu_button_rect.topleft = (screen_width - 180, 15)  # Positionne le bouton en haut à droite
 
     # Couleurs
     WHITE = (255, 255, 255)
@@ -186,6 +190,21 @@ def run_game():
     jump_velocity = -15  # Vitesse du saut
     gravity = 0.8  # Gravité du personnage
 
+    # Gestion du clic sur le bouton menu
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if menu_button_rect.collidepoint(event.pos):  # Si le clic touche le bouton menu
+                choose_level()  # Retourner à la page de sélection des niveaux
+                return  # Quitter la boucle actuelle et retourner au menu
+
+
+                # Affichage du fond et des autres éléments du jeu (terrain, joueur, etc.)
+                for i in range((screen_width + scroll_x) // background_width + 2):
+                    x_bg = i * background_width - (scroll_x % background_width)
+                    screen.blit(background, (x_bg, -380))
+                    screen.blit(flipped_bg, (x_bg, background.get_height()))
     # Initialisation du mouvement du saut
     is_jumping = False
     jump_frame = 0  # Compteur pour l'animation du saut
@@ -375,6 +394,9 @@ def run_game():
         # Dessiner la flèche de visée si on sélectionne une trajectoire
         if selecting_trajectory and arrow_end:
             draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
+
+         # Dessiner le bouton menu en haut à droite
+        screen.blit(menu_button, menu_button_rect)
 
 
         pygame.display.update()  # Actualiser l'écran
