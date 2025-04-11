@@ -234,6 +234,46 @@ def run_game():
     # Variables pour le défilement de l'écran
     scroll_x = 0
 
+    def draw():
+        # Affichage du fond en boucle
+        for i in range((screen_width + scroll_x) // background_width + 2):
+            x_bg = i * background_width - (scroll_x % background_width)
+            screen.blit(background, (x_bg, -380))
+            screen.blit(flipped_bg, (x_bg, background.get_height()))
+
+        # Terrain
+        for rect in terrain:
+            rect_scrolled = rect.move(-scroll_x, 0)
+            pygame.draw.rect(screen, SAND, rect_scrolled, border_radius=4)
+            pygame.draw.rect(screen, (0, 100, 0), rect_scrolled, 2, border_radius=4)
+
+        # Animation du personnage
+        if is_jumping:
+            img = jump[jump_frame]
+        elif is_walking:
+            img = walk_right[current_frame]
+        else:
+            img = idle[idle_frame]
+
+        if not facing_right:
+            img = pygame.transform.flip(img, True, False)
+
+        screen.blit(img, (x, y))
+
+        # Hitbox (optionnelle pour debug)
+        pygame.draw.rect(screen, (255, 0, 0), hitbox, 2)
+
+        # Boule
+        if ball_pos:
+            pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
+
+        # Flèche de visée
+        if selecting_trajectory:
+            arrow_end = pygame.mouse.get_pos()
+            draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
+
+        pygame.display.update()
+
     # Boucle principale du jeu
     run = True
     while run:
@@ -375,6 +415,8 @@ def run_game():
         # Dessiner la flèche de visée si on sélectionne une trajectoire
         if selecting_trajectory and arrow_end:
             draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
+
+        draw()
 
 
         pygame.display.update()  # Actualiser l'écran
