@@ -1,4 +1,6 @@
 import pygame
+import sys
+import math
 
 #Partie MENU
 
@@ -92,6 +94,7 @@ def choose_level():
                     return 2
 
 
+
 # Partie JEU PRINCIPAL
 
 def run_game():
@@ -110,6 +113,56 @@ def run_game():
     WHITE = (255, 255, 255)
     GREEN = (0, 255, 0)
     BROWN = (139, 69, 19)
+    RED = (255,0,0)
+    WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+
+    #création crâbe boule rouge
+    ball_radius = 10
+    ball_pos = None
+    ball_vel = None
+    gravity = 0.5
+    selecting_trajectory = False
+    arrow_end = None
+
+    # État
+    selecting_trajectory = False
+    arrow_end = None
+
+    # Dessine une vraie flèche entre deux points
+    def draw_arrow(start, end):
+        pygame.draw.line(screen, BLACK, start, end, 3)
+        angle = math.atan2(end[1] - start[1], end[0] - start[0])
+        arrow_size = 10
+
+        # Pointe de flèche
+        left = (end[0] - arrow_size * math.cos(angle - math.pi / 6),
+                end[1] - arrow_size * math.sin(angle - math.pi / 6))
+        right = (end[0] - arrow_size * math.cos(angle + math.pi / 6),
+                 end[1] - arrow_size * math.sin(angle + math.pi / 6))
+
+        pygame.draw.polygon(screen, BLACK, [end, left, right])
+
+    def draw():
+     # Flèche de visée (pendant que le joueur vise)
+     # Mettre à jour arrow_end pendant que la souris est maintenue
+     # Dessiner la flèche de visée si on est en train de viser
+     # Mettre à jour arrow_end pendant la visée
+     if selecting_trajectory:
+         arrow_end = pygame.mouse.get_pos()
+
+     if selecting_trajectory and arrow_end:
+         draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
+
+
+     # Boule
+
+    if ball_pos:
+        pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
+
+    pygame.display.update()
+
+
 
     # Variables du personnage
     x, y = 100, 500  # Position initiale
@@ -170,10 +223,27 @@ def run_game():
     run = True
     while run:
         clock.tick(60)  # Framerate (images par seconde)
+        # Définir la hitbox du personnage (à utiliser dans les événements)
+        hitbox = pygame.Rect(x, y, new_width, new_height)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if hitbox.colliderect(pygame.Rect(event.pos[0], event.pos[1], 1, 1)):
+                    selecting_trajectory = True
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if selecting_trajectory:
+                    arrow_end = event.pos
+                    dx = arrow_end[0] - hitbox.centerx
+                    dy = arrow_end[1] - hitbox.centery
+
+                    power = 0.2
+                    ball_pos = list(hitbox.center)
+                    ball_vel = [dx * power, dy * power]
+                    selecting_trajectory = False
+                    arrow_end = None
 
         # Détection des touches pressées
         keys = pygame.key.get_pressed()
@@ -279,6 +349,18 @@ def run_game():
 
         # Dessiner la hitbox du personnage (pour visualiser la hitbox)
         pygame.draw.rect(screen, (255, 0, 0), hitbox, 2)  # Dessiner la hitbox en rouge
+
+        # Mise à jour de la balle si elle existe
+        if ball_pos:
+            ball_vel[1] += gravity  # Appliquer la gravité
+            ball_pos[0] += ball_vel[0]
+            ball_pos[1] += ball_vel[1]
+            pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
+
+        # Dessiner la flèche de visée si on sélectionne une trajectoire
+        if selecting_trajectory and arrow_end:
+            draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
+
 
         pygame.display.update()  # Actualiser l'écran
 
