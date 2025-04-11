@@ -26,9 +26,10 @@ def show_menu():
         screen.blit(play_button, play_button_rect)
         # Création de la police et du texte
         font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 48)
-        title_text = font.render("CRABINATOR", True, (0, 0, 0))  # noir
+        title_text = font.render("CRABINATOR", True, (0, 0, 0))  # Jaune vif
         title_rect = title_text.get_rect(center=(725 // 2, 300))  # Centré
 
+        # Dans ta boucle principale du menu :
         screen.blit(background, (0, 0))
 
         # Affiche le titre
@@ -115,6 +116,7 @@ def run_game():
     RED = (255,0,0)
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
+    SAND= (237,201,175)
 
     #création crâbe boule rouge
     ball_radius = 10
@@ -248,20 +250,20 @@ def run_game():
         keys = pygame.key.get_pressed()
 
         # Déplacement du personnage
-        if keys[pygame.K_LEFT]:
-            x -= velocity
-            is_walking = True
-            facing_right = False
-            if x < screen_width / 2 and scroll_x > 0:
-                scroll_x -= velocity
-                x += velocity
-        elif keys[pygame.K_RIGHT]:
-            x += velocity
+        if keys[pygame.K_RIGHT]:
             is_walking = True
             facing_right = True
-            if x > screen_width / 2 and scroll_x < terrain[-1].right - screen_width:
+            if x < screen_width / 2 or scroll_x >= terrain[-1].right - screen_width:
+                x += velocity
+            else:
                 scroll_x += velocity
+        elif keys[pygame.K_LEFT]:
+            is_walking = True
+            facing_right = False
+            if x > screen_width / 2 or scroll_x <= 0:
                 x -= velocity
+            else:
+                scroll_x -= velocity
         else:
             is_walking = False
 
@@ -315,13 +317,13 @@ def run_game():
         # Affichage du fond en boucle
         for i in range((screen_width + scroll_x) // background_width + 2):
             x_bg = i * background_width - (scroll_x % background_width)
-            screen.blit(background, (x_bg, 0))
+            screen.blit(background, (x_bg, -380))
             screen.blit(flipped_bg, (x_bg, background.get_height()))
 
         # Dessiner le terrain avec hitboxes
         for rect in terrain:
             rect_scrolled = rect.move(-scroll_x, 0)
-            pygame.draw.rect(screen, BROWN, rect_scrolled, border_radius=4)
+            pygame.draw.rect(screen, SAND, rect_scrolled, border_radius=4)
             pygame.draw.rect(screen, (0, 100, 0), rect_scrolled, 2, border_radius=4)
 
         if is_jumping:
