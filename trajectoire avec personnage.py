@@ -24,7 +24,7 @@ girl_img = pygame.transform.scale(girl_img, (64, 64))
 girl_rect = girl_img.get_rect()
 girl_rect.midbottom = (100, sol_rect.top)
 
-ennemie_img = pygame.image.load('ennemi/homme.png.jpg')
+ennemie_img = pygame.image.load('ennemi1/poisson.png')
 ennemie_img = pygame.transform.scale(ennemie_img, (80, 80))
 ennemie_rect = ennemie_img.get_rect()
 ennemie_rect.midbottom = (650, sol_rect.top)
