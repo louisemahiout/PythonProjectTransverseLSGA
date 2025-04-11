@@ -2,6 +2,7 @@ import pygame
 import sys
 import math
 
+
 #Partie MENU
 
 def show_menu():
