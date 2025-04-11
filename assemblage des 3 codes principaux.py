@@ -26,10 +26,9 @@ def show_menu():
         screen.blit(play_button, play_button_rect)
         # Création de la police et du texte
         font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 48)
-        title_text = font.render("CRABINATOR", True, (0, 0, 0))  # Jaune vif
+        title_text = font.render("CRABINATOR", True, (0, 0, 0))  # noir
         title_rect = title_text.get_rect(center=(725 // 2, 300))  # Centré
 
-        # Dans ta boucle principale du menu :
         screen.blit(background, (0, 0))
 
         # Affiche le titre
