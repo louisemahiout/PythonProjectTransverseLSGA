@@ -55,14 +55,11 @@ def choose_level():
     screen = pygame.display.set_mode((725, 550))
     background = pygame.image.load("assetsaffichage/fond1.jpg").convert()
 
-    # Charger les boutons
-    level1_button = pygame.image.load("assetsaffichage/boutonplay.png").convert_alpha()
-    level1_button = pygame.transform.scale(level1_button, (300, 100))
-    level1_rect = level1_button.get_rect(center=(725 // 2, 250))
 
-    level2_button = pygame.image.load("assetsaffichage/boutonplay.png").convert_alpha()
-    level2_button = pygame.transform.scale(level2_button, (300, 100))
-    level2_rect = level2_button.get_rect(center=(725 // 2, 400))
+    # Création de rectangles pour les boutons
+    button_width, button_height = 300, 100
+    level1_rect = pygame.Rect((725 // 2 - button_width // 2, 250 - button_height // 2), (button_width, button_height))
+    level2_rect = pygame.Rect((725 // 2 - button_width // 2, 400 - button_height // 2), (button_width, button_height))
 
     font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 24)
     title_text = font.render("CHOISIS TON NIVEAU", True, (0, 0, 0))
@@ -71,14 +68,30 @@ def choose_level():
     running = True
     while running:
         screen.blit(background, (0, 0))
+        # Créer un fond semi-transparent pour le texte du titre
+        background_rect = pygame.Surface((title_rect.width + 20, title_rect.height + 20), pygame.SRCALPHA)
+        background_rect.fill((255, 255, 255, 180))  # Blanc semi-transparent
+        screen.blit(background_rect, (title_rect.x - 10, title_rect.y - 10))
 
         screen.blit(title_text, title_rect)
-        screen.blit(level1_button, level1_rect)
-        screen.blit(level2_button, level2_rect)
 
         # Affichage des labels
-        label1 = font.render("NIVEAU 1", True, (255, 255, 255))
-        label2 = font.render("NIVEAU 2", True, (255, 255, 255))
+        label1 = font.render("NIVEAU 1", True, (0, 0, 0))  # Texte en noir
+        label2 = font.render("NIVEAU 2", True, (0, 0, 0))  # Texte en noir
+
+        # Créer un fond semi-transparent pour chaque texte
+        label1_background = pygame.Surface((label1.get_width() + 20, label1.get_height() + 20), pygame.SRCALPHA)
+        label1_background.fill((255, 255, 255, 180))  # Fond semi-transparent (blanc)
+        label2_background = pygame.Surface((label2.get_width() + 20, label2.get_height() + 20), pygame.SRCALPHA)
+        label2_background.fill((255, 255, 255, 180))  # Fond semi-transparent (blanc)
+
+        # Afficher les arrière-plans
+        screen.blit(label1_background, (
+        level1_rect.centerx - label1.get_width() // 2 - 10, level1_rect.centery - label1.get_height() // 2 - 10))
+        screen.blit(label2_background, (
+        level2_rect.centerx - label2.get_width() // 2 - 10, level2_rect.centery - label2.get_height() // 2 - 10))
+
+        # Afficher les textes des niveaux
         screen.blit(label1, (level1_rect.centerx - label1.get_width() // 2, level1_rect.centery - 10))
         screen.blit(label2, (level2_rect.centerx - label2.get_width() // 2, level2_rect.centery - 10))
 
