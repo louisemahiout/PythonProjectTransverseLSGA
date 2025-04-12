@@ -118,7 +118,7 @@ def run_game():
     screen = pygame.display.set_mode((screen_width, screen_height))
     # Chargement du bouton menu
     menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
-    menu_button = pygame.transform.scale(menu_button, (100, 64))  # ajuste la taille selon ton image
+    menu_button = pygame.transform.scale(menu_button, (100, 70 ))  # ajuste la taille selon ton image
     menu_button_rect = menu_button.get_rect(topright=(screen_width - 20, 10))
     pygame.display.set_caption("Jeu avec Terrain")
     background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
@@ -314,7 +314,6 @@ def run_game():
                     ball_vel = [dx * power, dy * power]
                     selecting_trajectory = False
                     arrow_end = None
-
 
         # Détection des touches pressées
         keys = pygame.key.get_pressed()
