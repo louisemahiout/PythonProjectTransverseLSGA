@@ -1,46 +1,43 @@
 import pygame
-import sys
-import math
+import sys #gérer la fermeture
+import math #pour les calculs (notamment les angles de tir)
 
 
 #Partie MENU
 
-def show_menu():
+def show_menu(): #fonction qui affcihe le menu principal avec le bouton play
     pygame.init()
-    pygame.mixer.init()
+    pygame.mixer.init() #initialisation du jeu et du son
     pygame.mixer.music.load("assetsaffichage/musique.mp3")
     pygame.mixer.music.play(-1)  #jouer en boucle
-    pygame.mixer.music.set_volume(0.2)  # Volume initial (entre 0.0 et 1.0)
+    pygame.mixer.music.set_volume(0.2)  # Volume initial
     pygame.display.set_caption('Crabinator')
-    screen = pygame.display.set_mode((725, 550))
+    screen = pygame.display.set_mode((725, 550)) #création de la fenêtre
 
-    # Charger les images
+    # Charger les images + bouton play redimensioné et placé
     background = pygame.image.load("assetsaffichage/fond1.jpg").convert()
-    play_button = pygame.image.load('assetsaffichage/boutonplay.png').convert_alpha()
+    play_button = pygame.image.load('assetsaffichage/boutonplay.png').convert_alpha() #convert_aplha prend en compte la transparence
     play_button = pygame.transform.scale(play_button, (300, 200))
     play_button_rect = play_button.get_rect()
     play_button_rect.topleft = (200, 300)
 
-    running = True
+    running = True #quand on lance le jeu
     while running:
         screen.blit(background, (0, 0))
-        screen.blit(play_button, play_button_rect)
+        screen.blit(play_button, play_button_rect) #affichage du fond et du bouton play
         # Création de la police et du texte
         font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 48)
-        title_text = font.render("CRABINATOR", True, (0, 0, 0))  # Jaune vif
+        title_text = font.render("CRABINATOR", True, (0, 0, 0))  # noir
         title_rect = title_text.get_rect(center=(725 // 2, 300))  # Centré
-
-        # Dans ta boucle principale du menu :
         screen.blit(background, (0, 0))
-
-        # Affiche le titre
+        #affchage du texte
         screen.blit(title_text, title_rect)
-
         # Affiche le bouton
         screen.blit(play_button, play_button_rect)
-
+        #mise à jour de l'écran
         pygame.display.flip()
 
+        #arrêt du programme si on quitte la fenêtre et lancement du jeu quand on clique sur play
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -126,6 +123,7 @@ def run_game():
     flipped_bg = pygame.transform.flip(background, False, True)
 
     background_width = background.get_width()
+
 
     # Couleurs
     WHITE = (255, 255, 255)
