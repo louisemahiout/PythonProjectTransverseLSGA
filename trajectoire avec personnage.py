@@ -45,7 +45,6 @@ def draw_arrow(start, end):
     pygame.draw.line(win, BLACK, start, end, 3)
     angle = math.atan2(end[1] - start[1], end[0] - start[0])
     arrow_size = 10
-
     # Pointe de flèche
     left = (end[0] - arrow_size * math.cos(angle - math.pi / 6),
             end[1] - arrow_size * math.sin(angle - math.pi / 6))

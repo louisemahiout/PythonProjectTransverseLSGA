@@ -122,10 +122,6 @@ def run_game():
     flipped_bg = pygame.transform.flip(background, False, True)
 
     background_width = background.get_width()
-    menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
-    menu_button = pygame.transform.scale(menu_button, (150, 70))  # Ajuste la taille du bouton si nécessaire
-    menu_button_rect = menu_button.get_rect()
-    menu_button_rect.topleft = (screen_width - 180, 15)  # Positionne le bouton en haut à droite
 
     # Couleurs
     WHITE = (255, 255, 255)
@@ -190,21 +186,6 @@ def run_game():
     jump_velocity = -15  # Vitesse du saut
     gravity = 0.8  # Gravité du personnage
 
-    # Gestion du clic sur le bouton menu
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if menu_button_rect.collidepoint(event.pos):  # Si le clic touche le bouton menu
-                choose_level()  # Retourner à la page de sélection des niveaux
-                return  # Quitter la boucle actuelle et retourner au menu
-
-
-                # Affichage du fond et des autres éléments du jeu (terrain, joueur, etc.)
-                for i in range((screen_width + scroll_x) // background_width + 2):
-                    x_bg = i * background_width - (scroll_x % background_width)
-                    screen.blit(background, (x_bg, -380))
-                    screen.blit(flipped_bg, (x_bg, background.get_height()))
     # Initialisation du mouvement du saut
     is_jumping = False
     jump_frame = 0  # Compteur pour l'animation du saut
@@ -252,6 +233,46 @@ def run_game():
 
     # Variables pour le défilement de l'écran
     scroll_x = 0
+
+    def draw():
+        # Affichage du fond en boucle
+        for i in range((screen_width + scroll_x) // background_width + 2):
+            x_bg = i * background_width - (scroll_x % background_width)
+            screen.blit(background, (x_bg, -380))
+            screen.blit(flipped_bg, (x_bg, background.get_height()))
+
+        # Terrain
+        for rect in terrain:
+            rect_scrolled = rect.move(-scroll_x, 0)
+            pygame.draw.rect(screen, SAND, rect_scrolled, border_radius=4)
+            pygame.draw.rect(screen, (0, 100, 0), rect_scrolled, 2, border_radius=4)
+
+        # Animation du personnage
+        if is_jumping:
+            img = jump[jump_frame]
+        elif is_walking:
+            img = walk_right[current_frame]
+        else:
+            img = idle[idle_frame]
+
+        if not facing_right:
+            img = pygame.transform.flip(img, True, False)
+
+        screen.blit(img, (x, y))
+
+        # Hitbox (optionnelle pour debug)
+        pygame.draw.rect(screen, (255, 0, 0), hitbox, 2)
+
+        # Boule
+        if ball_pos:
+            pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
+
+        # Flèche de visée
+        if selecting_trajectory:
+            arrow_end = pygame.mouse.get_pos()
+            draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
+
+        pygame.display.update()
 
     # Boucle principale du jeu
     run = True
@@ -386,17 +407,55 @@ def run_game():
 
         # Mise à jour de la balle si elle existe
         if ball_pos:
-            ball_vel[1] += gravity  # Appliquer la gravité
+            # Appliquer la gravité
+            ball_vel[1] += gravity
             ball_pos[0] += ball_vel[0]
             ball_pos[1] += ball_vel[1]
+
+            # Rebond sur les bords de l'écran
+            if ball_pos[0] - ball_radius <= 0 or ball_pos[0] + ball_radius >= screen_width:
+                ball_vel[0] *= -0.8  # inversion + perte d'énergie
+                ball_pos[0] = max(ball_radius, min(ball_pos[0], screen_width - ball_radius))
+
+            # Rebond sur le sol
+            if ball_pos[1] + ball_radius >= screen_height:
+                ball_pos[1] = screen_height - ball_radius
+                ball_vel[1] *= -0.7  # inversion + amortissement
+
+                if abs(ball_vel[1]) < 1:
+                    ball_vel[1] = 0
+
+            # Rebond sur les plateformes
+            ball_rect = pygame.Rect(ball_pos[0] - ball_radius, ball_pos[1] - ball_radius, ball_radius * 2,
+                                    ball_radius * 2)
+            for rect in terrain:
+                rect_scrolled = rect.move(-scroll_x, 0)
+                if ball_rect.colliderect(rect_scrolled):
+                    # Rebond par le dessus
+                    if ball_vel[1] > 0 and ball_pos[1] - ball_radius < rect_scrolled.top:
+                        ball_pos[1] = rect_scrolled.top - ball_radius
+                        ball_vel[1] *= -0.7
+                    # Rebond par le dessous
+                    elif ball_vel[1] < 0 and ball_pos[1] + ball_radius > rect_scrolled.bottom:
+                        ball_pos[1] = rect_scrolled.bottom + ball_radius
+                        ball_vel[1] *= -0.7
+                    # Rebond latéral
+                    elif ball_pos[0] < rect_scrolled.centerx:
+                        ball_pos[0] = rect_scrolled.left - ball_radius
+                        ball_vel[0] *= -0.7
+                    else:
+                        ball_pos[0] = rect_scrolled.right + ball_radius
+                        ball_vel[0] *= -0.7
+
+
+            # Dessiner la balle
             pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
 
         # Dessiner la flèche de visée si on sélectionne une trajectoire
         if selecting_trajectory and arrow_end:
             draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
 
-         # Dessiner le bouton menu en haut à droite
-        screen.blit(menu_button, menu_button_rect)
+        draw()
 
 
         pygame.display.update()  # Actualiser l'écran
