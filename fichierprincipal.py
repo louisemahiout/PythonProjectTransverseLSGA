@@ -407,9 +407,48 @@ def run_game():
 
         # Mise à jour de la balle si elle existe
         if ball_pos:
-            ball_vel[1] += gravity  # Appliquer la gravité
+            # Appliquer la gravité
+            ball_vel[1] += gravity
             ball_pos[0] += ball_vel[0]
             ball_pos[1] += ball_vel[1]
+
+            # Rebond sur les bords de l'écran
+            if ball_pos[0] - ball_radius <= 0 or ball_pos[0] + ball_radius >= screen_width:
+                ball_vel[0] *= -0.8  # inversion + perte d'énergie
+                ball_pos[0] = max(ball_radius, min(ball_pos[0], screen_width - ball_radius))
+
+            # Rebond sur le sol
+            if ball_pos[1] + ball_radius >= screen_height:
+                ball_pos[1] = screen_height - ball_radius
+                ball_vel[1] *= -0.7  # inversion + amortissement
+
+                if abs(ball_vel[1]) < 1:
+                    ball_vel[1] = 0
+
+            # Rebond sur les plateformes
+            ball_rect = pygame.Rect(ball_pos[0] - ball_radius, ball_pos[1] - ball_radius, ball_radius * 2,
+                                    ball_radius * 2)
+            for rect in terrain:
+                rect_scrolled = rect.move(-scroll_x, 0)
+                if ball_rect.colliderect(rect_scrolled):
+                    # Rebond par le dessus
+                    if ball_vel[1] > 0 and ball_pos[1] - ball_radius < rect_scrolled.top:
+                        ball_pos[1] = rect_scrolled.top - ball_radius
+                        ball_vel[1] *= -0.7
+                    # Rebond par le dessous
+                    elif ball_vel[1] < 0 and ball_pos[1] + ball_radius > rect_scrolled.bottom:
+                        ball_pos[1] = rect_scrolled.bottom + ball_radius
+                        ball_vel[1] *= -0.7
+                    # Rebond latéral
+                    elif ball_pos[0] < rect_scrolled.centerx:
+                        ball_pos[0] = rect_scrolled.left - ball_radius
+                        ball_vel[0] *= -0.7
+                    else:
+                        ball_pos[0] = rect_scrolled.right + ball_radius
+                        ball_vel[0] *= -0.7
+
+
+            # Dessiner la balle
             pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
 
         # Dessiner la flèche de visée si on sélectionne une trajectoire
