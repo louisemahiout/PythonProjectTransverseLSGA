@@ -116,6 +116,10 @@ def run_game():
     screen_width = 725
     screen_height = 550
     screen = pygame.display.set_mode((screen_width, screen_height))
+    # Chargement du bouton menu
+    menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
+    menu_button = pygame.transform.scale(menu_button, (100, 64))  # ajuste la taille selon ton image
+    menu_button_rect = menu_button.get_rect(topright=(screen_width - 20, 10))
     pygame.display.set_caption("Jeu avec Terrain")
     background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
     # Crée une version miroir (flip vertical)
@@ -272,6 +276,9 @@ def run_game():
             arrow_end = pygame.mouse.get_pos()
             draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
 
+        # Affiche le bouton menu
+        screen.blit(menu_button, menu_button_rect)
+
         pygame.display.update()
 
     # Boucle principale du jeu
@@ -285,7 +292,15 @@ def run_game():
             if event.type == pygame.QUIT:
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if hitbox.colliderect(pygame.Rect(event.pos[0], event.pos[1], 1, 1)):
+                # Si on clique sur le bouton menu
+                if menu_button_rect.collidepoint(event.pos):
+                    level = choose_level()  # retourne à la sélection du niveau
+                    if level == 1 or level == 2:
+                        run_game()  # relance le jeu
+                    return  # quitte cette partie de jeu actuelle
+
+                # Sinon, si on clique sur le personnage pour viser
+                elif hitbox.colliderect(pygame.Rect(event.pos[0], event.pos[1], 1, 1)):
                     selecting_trajectory = True
 
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -299,6 +314,7 @@ def run_game():
                     ball_vel = [dx * power, dy * power]
                     selecting_trajectory = False
                     arrow_end = None
+
 
         # Détection des touches pressées
         keys = pygame.key.get_pressed()
