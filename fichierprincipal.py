@@ -1,63 +1,48 @@
 import pygame
-import sys #gérer la fermeture
-import math #pour les calculs (notamment les angles de tir)
+import sys
+import math
+import time
 
+# === Fonctions MENU & NIVEAUX (inchangées) ===
 
-#Partie MENU
-
-def show_menu(): #fonction qui affcihe le menu principal avec le bouton play
+def show_menu():
     pygame.init()
-    pygame.mixer.init() #initialisation du jeu et du son
+    pygame.mixer.init()
     pygame.mixer.music.load("assetsaffichage/musique.mp3")
-    pygame.mixer.music.play(-1)  #jouer en boucle
-    pygame.mixer.music.set_volume(0.2)  # Volume initial
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.2)
     pygame.display.set_caption('Crabinator')
-    screen = pygame.display.set_mode((725, 550)) #création de la fenêtre
-
-    # Charger les images + bouton play redimensioné et placé
+    screen = pygame.display.set_mode((725, 550))
     background = pygame.image.load("assetsaffichage/fond1.jpg").convert()
-    play_button = pygame.image.load('assetsaffichage/boutonplay.png').convert_alpha() #convert_aplha prend en compte la transparence
+    play_button = pygame.image.load('assetsaffichage/boutonplay.png').convert_alpha()
     play_button = pygame.transform.scale(play_button, (300, 200))
-    play_button_rect = play_button.get_rect()
-    play_button_rect.topleft = (200, 300)
+    play_button_rect = play_button.get_rect(topleft=(200, 300))
 
-    running = True #quand on lance le jeu
+    running = True
     while running:
         screen.blit(background, (0, 0))
-        screen.blit(play_button, play_button_rect) #affichage du fond et du bouton play
-        # Création de la police et du texte
-        font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 48)
-        title_text = font.render("CRABINATOR", True, (0, 0, 0))  # noir
-        title_rect = title_text.get_rect(center=(725 // 2, 300))  # Centré
-        screen.blit(background, (0, 0))
-        #affchage du texte
-        screen.blit(title_text, title_rect)
-        # Affiche le bouton
         screen.blit(play_button, play_button_rect)
-        #mise à jour de l'écran
+        font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 48)
+        title_text = font.render("CRABINATOR", True, (0, 0, 0))
+        title_rect = title_text.get_rect(center=(725 // 2, 300))
+        screen.blit(title_text, title_rect)
         pygame.display.flip()
 
-        #arrêt du programme si on quitte la fenêtre et lancement du jeu quand on clique sur play
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
-                return False  # L'utilisateur a fermé la fenêtre
+                return False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button_rect.collidepoint(event.pos):
-                    return True  # Le joueur a cliqué sur PLAY
-
+                    return True
 
 def choose_level():
     screen = pygame.display.set_mode((725, 550))
     background = pygame.image.load("assetsaffichage/fond1.jpg").convert()
-
-
-    # Création de rectangles pour les boutons
     button_width, button_height = 300, 100
     level1_rect = pygame.Rect((725 // 2 - button_width // 2, 250 - button_height // 2), (button_width, button_height))
     level2_rect = pygame.Rect((725 // 2 - button_width // 2, 400 - button_height // 2), (button_width, button_height))
-
     font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 24)
     title_text = font.render("CHOISIS TON NIVEAU", True, (0, 0, 0))
     title_rect = title_text.get_rect(center=(725 // 2, 100))
@@ -65,32 +50,29 @@ def choose_level():
     running = True
     while running:
         screen.blit(background, (0, 0))
-        # Créer un fond semi-transparent pour le texte du titre
-        background_rect = pygame.Surface((title_rect.width + 20, title_rect.height + 20), pygame.SRCALPHA)
-        background_rect.fill((255, 255, 255, 180))  # Blanc semi-transparent
-        screen.blit(background_rect, (title_rect.x - 10, title_rect.y - 10))
-
+        # fond semi-transparent pour le titre
+        bg_rect = pygame.Surface((title_rect.width + 20, title_rect.height + 20), pygame.SRCALPHA)
+        bg_rect.fill((255, 255, 255, 180))
+        screen.blit(bg_rect, (title_rect.x - 10, title_rect.y - 10))
         screen.blit(title_text, title_rect)
 
-        # Affichage des labels
-        label1 = font.render("NIVEAU 1", True, (0, 0, 0))  # Texte en noir
-        label2 = font.render("NIVEAU 2", True, (0, 0, 0))  # Texte en noir
+        # NIVEAU 1
+        label1 = font.render("NIVEAU 1", True, (0, 0, 0))
+        bg1 = pygame.Surface((label1.get_width()+20, label1.get_height()+20), pygame.SRCALPHA)
+        bg1.fill((255,255,255,180))
+        screen.blit(bg1, (level1_rect.centerx - label1.get_width()//2 - 10,
+                          level1_rect.centery - label1.get_height()//2 - 10))
+        screen.blit(label1, (level1_rect.centerx - label1.get_width()//2,
+                             level1_rect.centery - label1.get_height()//2))
 
-        # Créer un fond semi-transparent pour chaque texte
-        label1_background = pygame.Surface((label1.get_width() + 20, label1.get_height() + 20), pygame.SRCALPHA)
-        label1_background.fill((255, 255, 255, 180))  # Fond semi-transparent (blanc)
-        label2_background = pygame.Surface((label2.get_width() + 20, label2.get_height() + 20), pygame.SRCALPHA)
-        label2_background.fill((255, 255, 255, 180))  # Fond semi-transparent (blanc)
-
-        # Afficher les arrière-plans
-        screen.blit(label1_background, (
-        level1_rect.centerx - label1.get_width() // 2 - 10, level1_rect.centery - label1.get_height() // 2 - 10))
-        screen.blit(label2_background, (
-        level2_rect.centerx - label2.get_width() // 2 - 10, level2_rect.centery - label2.get_height() // 2 - 10))
-
-        # Afficher les textes des niveaux
-        screen.blit(label1, (level1_rect.centerx - label1.get_width() // 2, level1_rect.centery - 10))
-        screen.blit(label2, (level2_rect.centerx - label2.get_width() // 2, level2_rect.centery - 10))
+        # NIVEAU 2
+        label2 = font.render("NIVEAU 2", True, (0, 0, 0))
+        bg2 = pygame.Surface((label2.get_width()+20, label2.get_height()+20), pygame.SRCALPHA)
+        bg2.fill((255,255,255,180))
+        screen.blit(bg2, (level2_rect.centerx - label2.get_width()//2 - 10,
+                          level2_rect.centery - label2.get_height()//2 - 10))
+        screen.blit(label2, (level2_rect.centerx - label2.get_width()//2,
+                             level2_rect.centery - label2.get_height()//2))
 
         pygame.display.flip()
 
@@ -104,120 +86,26 @@ def choose_level():
                 elif level2_rect.collidepoint(event.pos):
                     return 2
 
-
-
-# Partie JEU PRINCIPAL
+# === JEU PRINCIPAL AVEC ENNEMIS & VIES ===
 
 def run_game():
-    # Paramètres de la fenêtre
-    screen_width = 725
-    screen_height = 550
+    # Initialisation
+    pygame.init()
+    screen_width, screen_height = 725, 550
     screen = pygame.display.set_mode((screen_width, screen_height))
-    # Chargement du bouton menu
-    menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
-    menu_button = pygame.transform.scale(menu_button, (100, 70 ))  # ajuste la taille selon ton image
-    menu_button_rect = menu_button.get_rect(topright=(screen_width - 20, 10))
-    pygame.display.set_caption("Jeu avec Terrain")
-    background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
-    # Crée une version miroir (flip vertical)
-    flipped_bg = pygame.transform.flip(background, False, True)
-
-    background_width = background.get_width()
-
-
-    # Couleurs
-    WHITE = (255, 255, 255)
-    GREEN = (0, 255, 0)
-    BROWN = (139, 69, 19)
-    RED = (255,0,0)
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
-    SAND= (237,201,175)
-
-    #création crâbe boule rouge
-    ball_radius = 10
-    ball_pos = None
-    ball_vel = None
-    gravity = 0.5
-    selecting_trajectory = False
-    arrow_end = None
-
-    # État
-    selecting_trajectory = False
-    arrow_end = None
-
-    # Dessine une vraie flèche entre deux points
-    def draw_arrow(start, end):
-        pygame.draw.line(screen, BLACK, start, end, 3)
-        angle = math.atan2(end[1] - start[1], end[0] - start[0])
-        arrow_size = 10
-
-        # Pointe de flèche
-        left = (end[0] - arrow_size * math.cos(angle - math.pi / 6),
-                end[1] - arrow_size * math.sin(angle - math.pi / 6))
-        right = (end[0] - arrow_size * math.cos(angle + math.pi / 6),
-                 end[1] - arrow_size * math.sin(angle + math.pi / 6))
-
-        pygame.draw.polygon(screen, BLACK, [end, left, right])
-
-    def draw():
-     # Flèche de visée (pendant que le joueur vise)
-     # Mettre à jour arrow_end pendant que la souris est maintenue
-     # Dessiner la flèche de visée si on est en train de viser
-     # Mettre à jour arrow_end pendant la visée
-     if selecting_trajectory:
-         arrow_end = pygame.mouse.get_pos()
-
-     if selecting_trajectory and arrow_end:
-         draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
-
-
-     # Boule
-
-    if ball_pos:
-        pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
-
-    pygame.display.update()
-
-
-
-    # Variables du personnage
-    x, y = 100, 500  # Position initiale
-    width, height = 64, 64  # Taille du personnage
-    velocity = 5  # Vitesse du personnage
-    jump_velocity = -15  # Vitesse du saut
-    gravity = 0.8  # Gravité du personnage
-
-    # Initialisation du mouvement du saut
-    is_jumping = False
-    jump_frame = 0  # Compteur pour l'animation du saut
-    y_velocity = 0  # Vitesse verticale du personnage
-
-    # Taille des images redimensionnées (augmentée)
-    new_width = 64  # Nouvelle largeur de l'image
-    new_height = 64  # Nouvelle hauteur de l'image
-
-    # Chargement et redimensionnement des sprites à partir du dossier 'png'
-    walk_right = [
-        pygame.transform.scale(pygame.image.load(f'Hero/Run ({i}).png').convert_alpha(), (new_width, new_height)) for i
-        in range(1, 15)]
-    walk_left = [
-        pygame.transform.scale(pygame.image.load(f'Hero/Run ({i}).png').convert_alpha(), (new_width, new_height)) for i
-        in range(1, 15)]
-    idle = [pygame.transform.scale(pygame.image.load(f'Hero/Idle ({i}).png').convert_alpha(), (new_width, new_height))
-            for i in range(1, 15)]
-    jump = [pygame.transform.scale(pygame.image.load(f'Hero/Jump ({i}).png').convert_alpha(), (new_width, new_height))
-            for i in range(1, 17)]
-
-    # Animation
+    pygame.display.set_caption("Crabinator – Niveau")
     clock = pygame.time.Clock()
-    current_frame = 0
-    idle_frame = 0
-    idle_counter = 0
-    is_walking = False
-    facing_right = True
 
-    # Définir le terrain avec hitboxes
+    # Bouton MENU
+    menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
+    menu_button = pygame.transform.scale(menu_button, (100, 70))
+    menu_button_rect = menu_button.get_rect(topright=(screen_width - 20, 10))
+
+    # Fond & terrain
+    background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
+    flipped_bg = pygame.transform.flip(background, False, True)
+    bg_w = background.get_width()
+    SAND = (237,201,175)
     terrain = [
         pygame.Rect(0, screen_height - 20, 5000, 20),
         pygame.Rect(500, 420, 100, 20),
@@ -227,259 +115,258 @@ def run_game():
         pygame.Rect(2100, 300, 100, 20),
         pygame.Rect(2800, 420, 100, 20),
         pygame.Rect(3000, 360, 100, 20),
-
     ]
 
-    #position du joueur
-    x, y = 100, 436  # correspond à hauteur = 64 (500 - 64)
+    # Personnage
+    new_w, new_h = 64, 64
+    x, y = 100, screen_height - 20 - new_h
+    velocity = 5
+    jump_velocity = -15
+    gravity = 0.8
+    y_vel = 0
+    is_jumping = False
+    is_walking = False
+    facing_right = True
 
-    # Variables pour le défilement de l'écran
-    scroll_x = 0
+    # Sprites
+    walk = [pygame.transform.scale(
+        pygame.image.load(f'Hero/Run ({i}).png').convert_alpha(), (new_w, new_h)
+    ) for i in range(1, 15)]
+    idle = [pygame.transform.scale(
+        pygame.image.load(f'Hero/Idle ({i}).png').convert_alpha(), (new_w, new_h)
+    ) for i in range(1, 15)]
+    jump_anim = [pygame.transform.scale(
+        pygame.image.load(f'Hero/Jump ({i}).png').convert_alpha(), (new_w, new_h)
+    ) for i in range(1, 17)]
+    cur_frame = 0
+    idle_frame = 0
+    idle_counter = 0
+    jump_frame = 0
 
-    def draw():
-        # Affichage du fond en boucle
-        for i in range((screen_width + scroll_x) // background_width + 2):
-            x_bg = i * background_width - (scroll_x % background_width)
+    # Balle de crabe-tir
+    ball_radius = 10
+    ball_pos = None
+    ball_vel = None
+    selecting_trajectory = False
+    arrow_end = None
+
+    # Ennemi (bots)
+    bots = [
+        pygame.Rect(400, screen_height - 50, 40, 30),
+        pygame.Rect(800, screen_height - 50, 40, 30),
+        pygame.Rect(1200, screen_height - 50, 40, 30),
+    ]
+    bot_speed = 3
+
+    # Vies & invincibilité
+    lives = 3
+    invincible = False
+    inv_time = 0
+    INV_DURATION = 2000  # ms
+
+    # Fonctions auxiliaires
+    def draw_arrow(start, end):
+        pygame.draw.line(screen, (0,0,0), start, end, 3)
+        ang = math.atan2(end[1]-start[1], end[0]-start[0])
+        size = 10
+        left = (end[0] - size*math.cos(ang - math.pi/6),
+                end[1] - size*math.sin(ang - math.pi/6))
+        right = (end[0] - size*math.cos(ang + math.pi/6),
+                 end[1] - size*math.sin(ang + math.pi/6))
+        pygame.draw.polygon(screen, (0,0,0), [end, left, right])
+
+    def draw_scene(scroll_x):
+        # Fond en boucle
+        for i in range((screen_width + scroll_x)//bg_w + 2):
+            x_bg = i*bg_w - (scroll_x % bg_w)
             screen.blit(background, (x_bg, -380))
             screen.blit(flipped_bg, (x_bg, background.get_height()))
 
         # Terrain
         for rect in terrain:
-            rect_scrolled = rect.move(-scroll_x, 0)
-            pygame.draw.rect(screen, SAND, rect_scrolled, border_radius=4)
-            pygame.draw.rect(screen, (0, 100, 0), rect_scrolled, 2, border_radius=4)
+            r = rect.move(-scroll_x, 0)
+            pygame.draw.rect(screen, SAND, r, border_radius=4)
+            pygame.draw.rect(screen, (0,100,0), r, 2, border_radius=4)
 
-        # Animation du personnage
-        if is_jumping:
-            img = jump[jump_frame]
-        elif is_walking:
-            img = walk_right[current_frame]
-        else:
-            img = idle[idle_frame]
-
-        if not facing_right:
-            img = pygame.transform.flip(img, True, False)
-
-        screen.blit(img, (x, y))
-
-        # Hitbox (optionnelle pour debug)
-        pygame.draw.rect(screen, (255, 0, 0), hitbox, 2)
-
-        # Boule
-        if ball_pos:
-            pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
-
-        # Flèche de visée
-        if selecting_trajectory:
-            arrow_end = pygame.mouse.get_pos()
-            draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
-
-        # Affiche le bouton menu
-        screen.blit(menu_button, menu_button_rect)
-
-        pygame.display.update()
-
-    # Boucle principale du jeu
-    run = True
-    while run:
-        clock.tick(60)  # Framerate (images par seconde)
-        # Définir la hitbox du personnage (à utiliser dans les événements)
-        hitbox = pygame.Rect(x, y, new_width, new_height)
-
+    # Boucle principale
+    scroll_x = 0
+    running = True
+    while running:
+        dt = clock.tick(60)
+        # Événements
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                pygame.quit()
+                return
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                # Si on clique sur le bouton menu
                 if menu_button_rect.collidepoint(event.pos):
-                    level = choose_level()  # retourne à la sélection du niveau
-                    if level == 1 or level == 2:
-                        run_game()  # relance le jeu
-                    return  # quitte cette partie de jeu actuelle
-
-                # Sinon, si on clique sur le personnage pour viser
-                elif hitbox.colliderect(pygame.Rect(event.pos[0], event.pos[1], 1, 1)):
+                    lvl = choose_level()
+                    if lvl in (1,2):
+                        run_game()
+                    return
+                hitbox = pygame.Rect(x, y, new_w, new_h)
+                if hitbox.collidepoint(event.pos):
                     selecting_trajectory = True
+            elif event.type == pygame.MOUSEBUTTONUP and selecting_trajectory:
+                arrow_end = event.pos
+                dx = arrow_end[0] - (x + new_w//2)
+                dy = arrow_end[1] - (y + new_h//2)
+                power = 0.2
+                ball_pos = [x + new_w//2, y + new_h//2]
+                ball_vel = [dx*power, dy*power]
+                selecting_trajectory = False
 
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if selecting_trajectory:
-                    arrow_end = event.pos
-                    dx = arrow_end[0] - hitbox.centerx
-                    dy = arrow_end[1] - hitbox.centery
-
-                    power = 0.2
-                    ball_pos = list(hitbox.center)
-                    ball_vel = [dx * power, dy * power]
-                    selecting_trajectory = False
-                    arrow_end = None
-
-        # Détection des touches pressées
+        # Touche
         keys = pygame.key.get_pressed()
-
-        # Déplacement du personnage
+        is_walking = False
         if keys[pygame.K_RIGHT]:
             is_walking = True
             facing_right = True
-            if x < screen_width / 2 or scroll_x >= terrain[-1].right - screen_width:
+            if x < screen_width/2 or scroll_x >= terrain[-1].right - screen_width:
                 x += velocity
             else:
                 scroll_x += velocity
         elif keys[pygame.K_LEFT]:
             is_walking = True
             facing_right = False
-            if x > screen_width / 2 or scroll_x <= 0:
+            if x > screen_width/2 or scroll_x <= 0:
                 x -= velocity
             else:
                 scroll_x -= velocity
-        else:
-            is_walking = False
 
-        # Définir la hitbox du personnage
-        hitbox = pygame.Rect(x, y, new_width, new_height)
+        # Saut
+        if not is_jumping and keys[pygame.K_SPACE]:
+            is_jumping = True
+            y_vel = jump_velocity
 
-        # Appliquer la gravité en continu
-        y_velocity += gravity
-        y += y_velocity
+        # Gravité personnage
+        y_vel += gravity
+        y += y_vel
 
-        # Vérifier les collisions avec le terrain
+        # Collision terrain personnage
+        hitbox = pygame.Rect(x, y, new_w, new_h)
         for rect in terrain:
-            rect_scrolled = rect.move(-scroll_x, 0)
-            if hitbox.colliderect(rect_scrolled):
-                if y_velocity > 0:  # Si le personnage tombe
-                    y = rect_scrolled.top - new_height
-                    y_velocity = 0
+            r = rect.move(-scroll_x,0)
+            if hitbox.colliderect(r):
+                if y_vel > 0:
+                    y = r.top - new_h
+                    y_vel = 0
                     is_jumping = False
-                elif y_velocity < 0:  # Si le personnage saute
-                    y_velocity = 0
+                elif y_vel < 0:
+                    y_vel = 0
 
-        # Empêcher le personnage de passer sous les plateformes
-        if y + new_height > screen_height:
-            y = screen_height - new_height
-            y_velocity = 0
+        if y + new_h > screen_height:
+            y = screen_height - new_h
+            y_vel = 0
             is_jumping = False
 
-        # Logique du saut
-        if not is_jumping and keys[pygame.K_SPACE]:  # Si la touche espace est pressée, effectuer un saut
-            is_jumping = True
-            y_velocity = jump_velocity  # Appliquer la vitesse de saut
-            jump_frame = 0  # Revenir au premier frame de l'animation du saut
-
-        jump_frame += 1
-        if jump_frame >= len(jump):  # Arrêter l'animation après 16 images
-            jump_frame = len(jump) - 1  # Dernière image de l'animation de saut
-
-        # Animation du personnage
-        if is_walking and not is_jumping:
-            current_frame += 1
-            if current_frame >= len(walk_right):
-                current_frame = 0
-        elif not is_jumping:
-            idle_counter += 1
-            if idle_counter >= 5:  # Ajustez cette valeur pour ralentir l'animation d'attente
-                idle_counter = 0
-                idle_frame += 1
-                if idle_frame >= len(idle):
-                    idle_frame = 0
-
-        # Affichage du fond en boucle
-        for i in range((screen_width + scroll_x) // background_width + 2):
-            x_bg = i * background_width - (scroll_x % background_width)
-            screen.blit(background, (x_bg, -380))
-            screen.blit(flipped_bg, (x_bg, background.get_height()))
-
-        # Dessiner le terrain avec hitboxes
-        for rect in terrain:
-            rect_scrolled = rect.move(-scroll_x, 0)
-            pygame.draw.rect(screen, SAND, rect_scrolled, border_radius=4)
-            pygame.draw.rect(screen, (0, 100, 0), rect_scrolled, 2, border_radius=4)
-
+        # Animation perso
         if is_jumping:
-            # Afficher l'animation du saut, inversée si le personnage regarde à gauche
-            if facing_right:
-                screen.blit(jump[jump_frame], (x, y))
-            else:
-                flipped_jump = pygame.transform.flip(jump[jump_frame], True, False)
-                screen.blit(flipped_jump, (x, y))
+            img = jump_anim[jump_frame]
         elif is_walking:
-            # Afficher l'animation de marche, inversée si le personnage regarde à gauche
-            if facing_right:
-                screen.blit(walk_right[current_frame], (x, y))
-            else:
-                flipped_image = pygame.transform.flip(walk_right[current_frame], True, False)
-                screen.blit(flipped_image, (x, y))
+            img = walk[cur_frame]
         else:
-            # Afficher l'animation d'attente (idle)
-            if facing_right:
-                screen.blit(idle[idle_frame], (x, y))  # Normal pour la droite
-            else:
-                flipped_idle = pygame.transform.flip(idle[idle_frame], True, False)
-                screen.blit(flipped_idle, (x, y))  # Inversé pour la gauche
+            img = idle[idle_frame]
+        if not facing_right:
+            img = pygame.transform.flip(img, True, False)
 
-        # Dessiner la hitbox du personnage (pour visualiser la hitbox)
-        pygame.draw.rect(screen, (255, 0, 0), hitbox, 2)  # Dessiner la hitbox en rouge
+        # Avance frames
+        if is_jumping:
+            jump_frame = min(jump_frame+1, len(jump_anim)-1)
+        elif is_walking:
+            cur_frame = (cur_frame+1) % len(walk)
+        else:
+            idle_counter += 1
+            if idle_counter >= 5:
+                idle_counter = 0
+                idle_frame = (idle_frame+1) % len(idle)
 
-        # Mise à jour de la balle si elle existe
+        # Mise à jour balle
         if ball_pos:
-            # Appliquer la gravité
             ball_vel[1] += gravity
             ball_pos[0] += ball_vel[0]
             ball_pos[1] += ball_vel[1]
-
-            # Rebond sur les bords de l'écran
-            if ball_pos[0] - ball_radius <= 0 or ball_pos[0] + ball_radius >= screen_width:
-                ball_vel[0] *= -0.8  # inversion + perte d'énergie
-                ball_pos[0] = max(ball_radius, min(ball_pos[0], screen_width - ball_radius))
-
-            # Rebond sur le sol
-            if ball_pos[1] + ball_radius >= screen_height:
+            # Rebond murs
+            if ball_pos[0]-ball_radius <= 0 or ball_pos[0]+ball_radius >= screen_width:
+                ball_vel[0] *= -0.8
+            # Rebond sol
+            if ball_pos[1]+ball_radius >= screen_height:
+                ball_vel[1] *= -0.7
                 ball_pos[1] = screen_height - ball_radius
-                ball_vel[1] *= -0.7  # inversion + amortissement
-
-                if abs(ball_vel[1]) < 1:
-                    ball_vel[1] = 0
-
-            # Rebond sur les plateformes
-            ball_rect = pygame.Rect(ball_pos[0] - ball_radius, ball_pos[1] - ball_radius, ball_radius * 2,
-                                    ball_radius * 2)
+            # Rebond plateformes
+            ball_rect = pygame.Rect(ball_pos[0]-ball_radius, ball_pos[1]-ball_radius,
+                                     ball_radius*2, ball_radius*2)
             for rect in terrain:
-                rect_scrolled = rect.move(-scroll_x, 0)
-                if ball_rect.colliderect(rect_scrolled):
-                    # Rebond par le dessus
-                    if ball_vel[1] > 0 and ball_pos[1] - ball_radius < rect_scrolled.top:
-                        ball_pos[1] = rect_scrolled.top - ball_radius
+                r = rect.move(-scroll_x,0)
+                if ball_rect.colliderect(r):
+                    if ball_vel[1] > 0 and ball_pos[1] < r.top:
+                        ball_pos[1] = r.top - ball_radius
                         ball_vel[1] *= -0.7
-                    # Rebond par le dessous
-                    elif ball_vel[1] < 0 and ball_pos[1] + ball_radius > rect_scrolled.bottom:
-                        ball_pos[1] = rect_scrolled.bottom + ball_radius
-                        ball_vel[1] *= -0.7
-                    # Rebond latéral
-                    elif ball_pos[0] < rect_scrolled.centerx:
-                        ball_pos[0] = rect_scrolled.left - ball_radius
-                        ball_vel[0] *= -0.7
-                    else:
-                        ball_pos[0] = rect_scrolled.right + ball_radius
-                        ball_vel[0] *= -0.7
 
+        # Déplacement bots
+        for b in bots:
+            # b.x est en coords monde
+            player_world_x = x + scroll_x
+            if abs(b.x - player_world_x) <= 200:
+                if b.x < player_world_x:
+                    b.x += bot_speed
+                else:
+                    b.x -= bot_speed
 
-            # Dessiner la balle
-            pygame.draw.circle(screen, RED, (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
+        # Gestion invincibilité
+        now = pygame.time.get_ticks()
+        if invincible and now - inv_time > INV_DURATION:
+            invincible = False
 
-        # Dessiner la flèche de visée si on sélectionne une trajectoire
-        if selecting_trajectory and arrow_end:
-            draw_arrow((x + new_width // 2, y + new_height // 2), arrow_end)
+        # Collision perso <-> bots
+        player_rect = pygame.Rect(x, y, new_w, new_h)
+        for b in bots:
+            b_scr = b.move(-scroll_x, 0)
+            if player_rect.colliderect(b_scr) and not invincible:
+                lives -= 1
+                invincible = True
+                inv_time = now
+                print(f"Touché ! Vies restantes : {lives}")
+                if lives <= 0:
+                    print("Game Over!")
+                    running = False
 
-        draw()
+        # Dessin
+        screen.fill((255,255,255))
+        draw_scene(scroll_x)
 
+        # Dessiner bots
+        for b in bots:
+            b_scr = b.move(-scroll_x, 0)
+            pygame.draw.rect(screen, (0,0,255), b_scr)
 
-        pygame.display.update()  # Actualiser l'écran
+        # Dessiner perso
+        color = (255,165,0) if invincible else (255,0,0)
+        screen.blit(img, (x, y))
+        # pygame.draw.rect(screen, color, player_rect, 2)
 
-    # Quitter Pygame
+        # Dessiner balle et flèche
+        if ball_pos:
+            pygame.draw.circle(screen, (255,0,0), (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
+        if selecting_trajectory:
+            end = pygame.mouse.get_pos()
+            draw_arrow((x+new_w//2, y+new_h//2), end)
+
+        # Bouton menu
+        screen.blit(menu_button, menu_button_rect)
+
+        # Afficher lives
+        font = pygame.font.SysFont(None, 36)
+        txt = font.render(f"Vies : {lives}", True, (0,0,0))
+        screen.blit(txt, (10,10))
+
+        pygame.display.update()
+
     pygame.quit()
 
-# === Lancement ===
+
+# === LANCEMENT ===
 if show_menu():
-    selected_level = choose_level()
-    if selected_level == 1:
+    lvl = choose_level()
+    if lvl in (1,2):
         run_game()
-    elif selected_level == 2:
-        run_game()  # On pourra remplacer ici par run_game_level2() plus tard
