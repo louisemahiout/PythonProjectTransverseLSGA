@@ -3,10 +3,11 @@ import sys
 import math
 import time
 
-# === Fonctions MENU & NIVEAUX (inchangées) ===
+# === Foncti ons MENU & NIVEAUX (inchangées) ===
 
 def show_menu():
     pygame.init()
+    font = pygame.font.SysFont("Arial", 24)
     pygame.mixer.init()
     pygame.mixer.music.load("assetsaffichage/musique.mp3")
     pygame.mixer.music.play(-1)
@@ -15,6 +16,9 @@ def show_menu():
     screen = pygame.display.set_mode((725, 550))
     background = pygame.image.load("assetsaffichage/fond1.jpg").convert()
     play_button = pygame.image.load('assetsaffichage/boutonplay.png').convert_alpha()
+    new_w, new_h = 64, 64
+    crab_img = pygame.image.load("assetsaffichage/crabe.png").convert_alpha()
+    crab_img = pygame.transform.scale(crab_img,(new_w // 2, new_h// 2))  # moitié de la taille du joueur
     play_button = pygame.transform.scale(play_button, (300, 200))
     play_button_rect = play_button.get_rect(topleft=(200, 300))
 
@@ -26,6 +30,7 @@ def show_menu():
         title_text = font.render("CRABINATOR", True, (0, 0, 0))
         title_rect = title_text.get_rect(center=(725 // 2, 300))
         screen.blit(title_text, title_rect)
+
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -57,7 +62,7 @@ def choose_level():
         screen.blit(title_text, title_rect)
 
         # NIVEAU 1
-        label1 = font.render("NIVEAU 1", True, (0, 0, 0))
+        label1 = font.render("TUTORIEL(easy)", True, (0, 0, 0))
         bg1 = pygame.Surface((label1.get_width()+20, label1.get_height()+20), pygame.SRCALPHA)
         bg1.fill((255,255,255,180))
         screen.blit(bg1, (level1_rect.centerx - label1.get_width()//2 - 10,
@@ -66,7 +71,7 @@ def choose_level():
                              level1_rect.centery - label1.get_height()//2))
 
         # NIVEAU 2
-        label2 = font.render("NIVEAU 2", True, (0, 0, 0))
+        label2 = font.render("JOUER(medium)", True, (0, 0, 0))
         bg2 = pygame.Surface((label2.get_width()+20, label2.get_height()+20), pygame.SRCALPHA)
         bg2.fill((255,255,255,180))
         screen.blit(bg2, (level2_rect.centerx - label2.get_width()//2 - 10,
@@ -96,6 +101,7 @@ def run_game():
     pygame.display.set_caption("Crabinator – Niveau")
     clock = pygame.time.Clock()
 
+
     # Bouton MENU
     menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
     menu_button = pygame.transform.scale(menu_button, (100, 70))
@@ -106,8 +112,11 @@ def run_game():
     flipped_bg = pygame.transform.flip(background, False, True)
     bg_w = background.get_width()
     SAND = (237,201,175)
-    terrain = [
-        pygame.Rect(0, screen_height - 20, 5000, 20),
+    # Le sol
+    ground = pygame.Rect(0, screen_height - 20, 5000, 20)
+
+    # Les plateformes
+    platforms = [
         pygame.Rect(500, 420, 100, 20),
         pygame.Rect(700, 360, 100, 20),
         pygame.Rect(1700, 420, 100, 20),
@@ -119,6 +128,9 @@ def run_game():
 
     # Personnage
     new_w, new_h = 64, 64
+    # Chargement du sprite de crabe pour les collectibles
+    crab_img = pygame.image.load("assetsaffichage/crabe.png").convert_alpha()
+    crab_img = pygame.transform.scale(crab_img, (new_w // 2, new_h // 2))
     x, y = 100, screen_height - 20 - new_h
     velocity = 5
     jump_velocity = -15
@@ -182,11 +194,30 @@ def run_game():
             screen.blit(background, (x_bg, -380))
             screen.blit(flipped_bg, (x_bg, background.get_height()))
 
-        # Terrain
-        for rect in terrain:
-            r = rect.move(-scroll_x, 0)
+        # Affichage du sol
+        r = ground.move(-scroll_x, 0)
+        pygame.draw.rect(screen, SAND, r, border_radius=4)
+        pygame.draw.rect(screen, (0, 100, 0), r, 2, border_radius=4)
+
+        # Affichage des plateformes
+        for platform in platforms:
+            r = platform.move(-scroll_x, 0)
             pygame.draw.rect(screen, SAND, r, border_radius=4)
-            pygame.draw.rect(screen, (0,100,0), r, 2, border_radius=4)
+            pygame.draw.rect(screen, (0, 100, 0), r, 2, border_radius=4)
+
+    crabs = [
+        {"rect": pygame.Rect(300, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(700, 350, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(1500, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(1800, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(2200, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(2500, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(2800, 200, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(3200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(3500, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+    ]
+    crabs_collected = 0
 
     # Boucle principale
     scroll_x = 0
@@ -222,7 +253,7 @@ def run_game():
         if keys[pygame.K_RIGHT]:
             is_walking = True
             facing_right = True
-            if x < screen_width/2 or scroll_x >= terrain[-1].right - screen_width:
+            if x < screen_width/2 or scroll_x >= (platforms[-1].right) - screen_width:
                 x += velocity
             else:
                 scroll_x += velocity
@@ -245,17 +276,23 @@ def run_game():
 
         # Collision terrain personnage
         hitbox = pygame.Rect(x, y, new_w, new_h)
-        for rect in terrain:
-            r = rect.move(-scroll_x,0)
+        on_ground = False  # <- à déclarer avant la boucle
+
+        for rect in [ground] + platforms:
+            r = rect.move(-scroll_x, 0)
+
             if hitbox.colliderect(r):
-                if y_vel > 0:
+                # Collision par le haut (tomber sur une plateforme)
+                if y_vel > 0 and hitbox.bottom <= r.bottom:
                     y = r.top - new_h
                     y_vel = 0
                     is_jumping = False
-                elif y_vel < 0:
+                    on_ground = True
+                # Si tu veux bloquer la tête contre le dessous de la plateforme :
+                elif y_vel < 0 and hitbox.top >= r.bottom - 10:
                     y_vel = 0
 
-        if y + new_h > screen_height:
+        if not on_ground and y + new_h >= screen_height:
             y = screen_height - new_h
             y_vel = 0
             is_jumping = False
@@ -296,7 +333,7 @@ def run_game():
             # Rebond plateformes
             ball_rect = pygame.Rect(ball_pos[0]-ball_radius, ball_pos[1]-ball_radius,
                                      ball_radius*2, ball_radius*2)
-            for rect in terrain:
+            for rect in [ground] + platforms:
                 r = rect.move(-scroll_x,0)
                 if ball_rect.colliderect(r):
                     if ball_vel[1] > 0 and ball_pos[1] < r.top:
