@@ -1,13 +1,10 @@
 import pygame
-import sys
 import math
-import time
 
 # === Foncti ons MENU & NIVEAUX (inchangées) ===
 
 def show_menu():
     pygame.init()
-    font = pygame.font.SysFont("Arial", 24)
     pygame.mixer.init()
     pygame.mixer.music.load("assetsaffichage/musique.mp3")
     pygame.mixer.music.play(-1)
@@ -62,7 +59,7 @@ def choose_level():
         screen.blit(title_text, title_rect)
 
         # NIVEAU 1
-        label1 = font.render("TUTORIEL(easy)", True, (0, 0, 0))
+        label1 = font.render("NIVEAU 1(easy)", True, (0, 0, 0))
         bg1 = pygame.Surface((label1.get_width()+20, label1.get_height()+20), pygame.SRCALPHA)
         bg1.fill((255,255,255,180))
         screen.blit(bg1, (level1_rect.centerx - label1.get_width()//2 - 10,
@@ -71,7 +68,7 @@ def choose_level():
                              level1_rect.centery - label1.get_height()//2))
 
         # NIVEAU 2
-        label2 = font.render("JOUER(medium)", True, (0, 0, 0))
+        label2 = font.render("NIVEAU 2(medium)", True, (0, 0, 0))
         bg2 = pygame.Surface((label2.get_width()+20, label2.get_height()+20), pygame.SRCALPHA)
         bg2.fill((255,255,255,180))
         screen.blit(bg2, (level2_rect.centerx - label2.get_width()//2 - 10,
@@ -90,6 +87,66 @@ def choose_level():
                     return 1
                 elif level2_rect.collidepoint(event.pos):
                     return 2
+
+
+def show_game_over_screen():
+    screen = pygame.display.set_mode((725, 550))
+    pygame.font.init()
+
+    # Police
+    title_font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 36)
+    button_font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 18)
+
+    # Fond
+    background = pygame.image.load("assetsaffichage/fond1.jpg").convert()
+
+    # Couleurs
+    red = (255, 0, 0)
+    white = (255, 255, 255)
+    black = (0, 0, 0)
+    semi_transparent_black = pygame.Surface((725, 550), pygame.SRCALPHA)
+    semi_transparent_black.fill((0, 0, 0, 180))  # noir transparent
+
+    # Boutons plus larges
+    button_width = 400
+    button_height = 60
+    restart_button = pygame.Rect((725 - button_width) // 2, 300, button_width, button_height)
+    menu_button = pygame.Rect((725 - button_width) // 2, 380, button_width, button_height)
+
+    running = True
+    while running:
+        screen.blit(background, (0, 0))
+        screen.blit(semi_transparent_black, (0, 0))  # assombrit le fond
+
+        # Titre Game Over
+        title_text = title_font.render("GAME OVER", True, red)
+        screen.blit(title_text, (725 // 2 - title_text.get_width() // 2, 150))
+
+        # Dessin boutons
+        for button in [restart_button, menu_button]:
+            pygame.draw.rect(screen, white, button, border_radius=10)
+
+        restart_text = button_font.render("Relancer le niveau", True, black)
+        menu_text = button_font.render("Retour au menu", True, black)
+
+        screen.blit(restart_text, (restart_button.centerx - restart_text.get_width() // 2,
+                                   restart_button.centery - restart_text.get_height() // 2))
+        screen.blit(menu_text, (menu_button.centerx - menu_text.get_width() // 2,
+                                menu_button.centery - menu_text.get_height() // 2))
+
+        pygame.display.flip()
+
+        # Événements
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if restart_button.collidepoint(event.pos):
+                    return "restart"
+                elif menu_button.collidepoint(event.pos):
+                    return "menu"
+
 
 # === JEU PRINCIPAL AVEC ENNEMIS & VIES ===
 
@@ -222,6 +279,18 @@ def run_game():
     # Boucle principale
     scroll_x = 0
     running = True
+    # Détection du niveau actuel (1 = tutoriel)
+    current_level = 1  # Change ça dynamiquement si tu veux plus tard
+
+    # Texte tutoriel (affiché uniquement si current_level == 1)
+    show_tutorial_text = current_level == 1
+    tutorial_font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 11)
+    tutorial_lines = [
+        "Utilise les flèches pour te déplacer,",
+        "la barre Espace pour sauter, et clique sur ton perso",
+        "puis vise avec la souris pour tirer sur les ennemis !"
+    ]
+
     while running:
         dt = clock.tick(60)
         # Événements
@@ -365,8 +434,12 @@ def run_game():
                 inv_time = now
                 print(f"Touché ! Vies restantes : {lives}")
                 if lives <= 0:
-                    print("Game Over!")
-                    running = False
+                    result = show_game_over_screen()
+                    if result == "restart":
+                        run_game()
+                    elif result == "menu":
+                        return
+                    return
 
         # Dessin
         screen.fill((255,255,255))
@@ -397,13 +470,26 @@ def run_game():
         txt = font.render(f"Vies : {lives}", True, (0,0,0))
         screen.blit(txt, (10,10))
 
+        # Affichage du texte tutoriel (en haut de l'écran)
+        if show_tutorial_text:
+            line_spacing = 30
+            for i, line in enumerate(tutorial_lines):
+                txt = tutorial_font.render(line, True, (0, 0, 0))
+                screen.blit(txt, (screen_width // 2 - txt.get_width() // 2,
+                                  200 + i * line_spacing))
+
         pygame.display.update()
 
     pygame.quit()
 
 
 # === LANCEMENT ===
-if show_menu():
-    lvl = choose_level()
-    if lvl in (1,2):
-        run_game()
+# === LANCEMENT ===
+while True:
+    if show_menu():
+        lvl = choose_level()
+        if lvl in (1, 2):
+            run_game()
+    else:
+        break  # Quitte si show_menu() retourne False
+
