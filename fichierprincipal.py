@@ -392,9 +392,7 @@ def run_game():
             ball_vel[1] += gravity
             ball_pos[0] += ball_vel[0]
             ball_pos[1] += ball_vel[1]
-            # Rebond murs
-            if ball_pos[0]-ball_radius <= 0 or ball_pos[0]+ball_radius >= screen_width:
-                ball_vel[0] *= -0.8
+
             # Rebond sol
             if ball_pos[1]+ball_radius >= screen_height:
                 ball_vel[1] *= -0.7
@@ -483,7 +481,6 @@ def run_game():
     pygame.quit()
 
 
-# === LANCEMENT ===
 # === LANCEMENT ===
 while True:
     if show_menu():
