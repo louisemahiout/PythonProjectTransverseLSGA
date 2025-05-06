@@ -233,6 +233,7 @@ def run_game():
     inv_time = 0
     INV_DURATION = 2000  # ms
 
+
     # Fonctions auxiliaires
     def draw_arrow(start, end):
         pygame.draw.line(screen, (0,0,0), start, end, 3)
@@ -244,12 +245,26 @@ def run_game():
                  end[1] - size*math.sin(ang + math.pi/6))
         pygame.draw.polygon(screen, (0,0,0), [end, left, right])
 
+    crabs = [  # modifier les placements
+        {"rect": pygame.Rect(300, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(700, 350, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(1500, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+    ]
+    crabs_collected= 0
+
     def draw_scene(scroll_x):
         # Fond en boucle
         for i in range((screen_width + scroll_x)//bg_w + 2):
             x_bg = i*bg_w - (scroll_x % bg_w)
             screen.blit(background, (x_bg, -380))
             screen.blit(flipped_bg, (x_bg, background.get_height()))
+        player_rect = pygame.Rect(x + scroll_x, y, new_w, new_h)
+        # Dessiner les crabes non collectés
+        for crab in crabs:
+            if not crab["collected"]:
+                crab_rect = crab["rect"].move(-scroll_x, 0)
+                screen.blit(crab_img, crab_rect.topleft)
 
         # Affichage du sol
         r = ground.move(-scroll_x, 0)
@@ -262,19 +277,13 @@ def run_game():
             pygame.draw.rect(screen, SAND, r, border_radius=4)
             pygame.draw.rect(screen, (0, 100, 0), r, 2, border_radius=4)
 
-    crabs = [
-        {"rect": pygame.Rect(300, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(700, 350, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(1500, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(1800, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(2200, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(2500, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(2800, 200, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(3200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(3500, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
-    ]
-    crabs_collected = 0
+    scroll_x=0
+    scroll_x += 5
+    for crab_rect in crabs:
+        r = crab_rect["rect"].move(-scroll_x, 0)
+        screen.blit(crab_img, r)
+
+
 
     # Boucle principale
     scroll_x = 0
@@ -316,6 +325,32 @@ def run_game():
                 ball_vel = [dx*power, dy*power]
                 selecting_trajectory = False
 
+            # Détection collecte crabe
+            player_rect = pygame.Rect(x + scroll_x, y, new_w, new_h)
+            for crab in crabs:
+                if not crab["collected"]:
+                    if player_rect.colliderect(crab["rect"]):
+                        crab["collected"] = True
+                        crabs_collected += 1  # Incrémentation du compteur
+                        print(f"Crabe collecté ! Total : {crabs_collected}")
+
+            # Touche
+            keys = pygame.key.get_pressed()
+            is_walking = False
+            if keys[pygame.K_RIGHT]:
+                is_walking = True
+                facing_right = True
+                if x < screen_width // 2:
+                    x += velocity
+                else:
+                    scroll_x += velocity
+            elif keys[pygame.K_LEFT]:
+                is_walking = True
+                facing_right = False
+                if x > screen_width / 2 or scroll_x <= 0:
+                    x -= velocity
+                else:
+                    scroll_x -= velocity
         # Touche
         keys = pygame.key.get_pressed()
         is_walking = False
@@ -468,7 +503,12 @@ def run_game():
         txt = font.render(f"Vies : {lives}", True, (0,0,0))
         screen.blit(txt, (10,10))
 
-        # Affichage du texte tutoriel (en haut de l'écran)
+        # Afficher crabes compteur
+        font = pygame.font.SysFont(None, 36)
+        txt = font.render(f"crabes : {crabs_collected}", True, (0, 0, 0))
+        screen.blit(txt, (10, 50))
+
+        #Affichage du texte tutoriel (en haut de l'écran)
         if show_tutorial_text:
             line_spacing = 30
             for i, line in enumerate(tutorial_lines):
@@ -489,4 +529,3 @@ while True:
             run_game()
     else:
         break  # Quitte si show_menu() retourne False
-

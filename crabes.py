@@ -1,13 +1,11 @@
 import pygame
-import sys
 import math
-import time
+
 
 # === Foncti ons MENU & NIVEAUX (inchangées) ===
 
 def show_menu():
     pygame.init()
-    font = pygame.font.SysFont("Arial", 24)
     pygame.mixer.init()
     pygame.mixer.music.load("assetsaffichage/musique.mp3")
     pygame.mixer.music.play(-1)
@@ -18,7 +16,7 @@ def show_menu():
     play_button = pygame.image.load('assetsaffichage/boutonplay.png').convert_alpha()
     new_w, new_h = 64, 64
     crab_img = pygame.image.load("assetsaffichage/crabe.png").convert_alpha()
-    crab_img = pygame.transform.scale(crab_img,(new_w // 2, new_h// 2))  # moitié de la taille du joueur
+    crab_img = pygame.transform.scale(crab_img, (new_w // 2, new_h // 2))  # moitié de la taille du joueur
     play_button = pygame.transform.scale(play_button, (300, 200))
     play_button_rect = play_button.get_rect(topleft=(200, 300))
 
@@ -31,7 +29,6 @@ def show_menu():
         title_rect = title_text.get_rect(center=(725 // 2, 300))
         screen.blit(title_text, title_rect)
 
-
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -42,6 +39,7 @@ def show_menu():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button_rect.collidepoint(event.pos):
                     return True
+
 
 def choose_level():
     screen = pygame.display.set_mode((725, 550))
@@ -63,23 +61,22 @@ def choose_level():
         screen.blit(title_text, title_rect)
 
         # NIVEAU 1
-        label1 = font.render("TUTORIEL(easy)", True, (0, 0, 0))
-        bg1 = pygame.Surface((label1.get_width()+20, label1.get_height()+20), pygame.SRCALPHA)
-        bg1.fill((255,255,255,180))
-        screen.blit(bg1, (level1_rect.centerx - label1.get_width()//2 - 10,
-                          level1_rect.centery - label1.get_height()//2 - 10))
-        screen.blit(label1, (level1_rect.centerx - label1.get_width()//2,
-                             level1_rect.centery - label1.get_height()//2))
+        label1 = font.render("NIVEAU 1(easy)", True, (0, 0, 0))
+        bg1 = pygame.Surface((label1.get_width() + 20, label1.get_height() + 20), pygame.SRCALPHA)
+        bg1.fill((255, 255, 255, 180))
+        screen.blit(bg1, (level1_rect.centerx - label1.get_width() // 2 - 10,
+                          level1_rect.centery - label1.get_height() // 2 - 10))
+        screen.blit(label1, (level1_rect.centerx - label1.get_width() // 2,
+                             level1_rect.centery - label1.get_height() // 2))
 
         # NIVEAU 2
-        label2 = font.render("JOUER(medium)", True, (0, 0, 0))
-        bg2 = pygame.Surface((label2.get_width()+20, label2.get_height()+20), pygame.SRCALPHA)
-        bg2.fill((255,255,255,180))
-        screen.blit(bg2, (level2_rect.centerx - label2.get_width()//2 - 10,
-                          level2_rect.centery - label2.get_height()//2 - 10))
-        screen.blit(label2, (level2_rect.centerx - label2.get_width()//2,
-                             level2_rect.centery - label2.get_height()//2))
-
+        label2 = font.render("NIVEAU 2(medium)", True, (0, 0, 0))
+        bg2 = pygame.Surface((label2.get_width() + 20, label2.get_height() + 20), pygame.SRCALPHA)
+        bg2.fill((255, 255, 255, 180))
+        screen.blit(bg2, (level2_rect.centerx - label2.get_width() // 2 - 10,
+                          level2_rect.centery - label2.get_height() // 2 - 10))
+        screen.blit(label2, (level2_rect.centerx - label2.get_width() // 2,
+                             level2_rect.centery - label2.get_height() // 2))
 
         pygame.display.flip()
 
@@ -93,6 +90,66 @@ def choose_level():
                 elif level2_rect.collidepoint(event.pos):
                     return 2
 
+
+def show_game_over_screen():
+    screen = pygame.display.set_mode((725, 550))
+    pygame.font.init()
+
+    # Police
+    title_font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 36)
+    button_font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 18)
+
+    # Fond
+    background = pygame.image.load("assetsaffichage/fond1.jpg").convert()
+
+    # Couleurs
+    red = (255, 0, 0)
+    white = (255, 255, 255)
+    black = (0, 0, 0)
+    semi_transparent_black = pygame.Surface((725, 550), pygame.SRCALPHA)
+    semi_transparent_black.fill((0, 0, 0, 180))  # noir transparent
+
+    # Boutons plus larges
+    button_width = 400
+    button_height = 60
+    restart_button = pygame.Rect((725 - button_width) // 2, 300, button_width, button_height)
+    menu_button = pygame.Rect((725 - button_width) // 2, 380, button_width, button_height)
+
+    running = True
+    while running:
+        screen.blit(background, (0, 0))
+        screen.blit(semi_transparent_black, (0, 0))  # assombrit le fond
+
+        # Titre Game Over
+        title_text = title_font.render("GAME OVER", True, red)
+        screen.blit(title_text, (725 // 2 - title_text.get_width() // 2, 150))
+
+        # Dessin boutons
+        for button in [restart_button, menu_button]:
+            pygame.draw.rect(screen, white, button, border_radius=10)
+
+        restart_text = button_font.render("Relancer le niveau", True, black)
+        menu_text = button_font.render("Retour au menu", True, black)
+
+        screen.blit(restart_text, (restart_button.centerx - restart_text.get_width() // 2,
+                                   restart_button.centery - restart_text.get_height() // 2))
+        screen.blit(menu_text, (menu_button.centerx - menu_text.get_width() // 2,
+                                menu_button.centery - menu_text.get_height() // 2))
+
+        pygame.display.flip()
+
+        # Événements
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if restart_button.collidepoint(event.pos):
+                    return "restart"
+                elif menu_button.collidepoint(event.pos):
+                    return "menu"
+
+
 # === JEU PRINCIPAL AVEC ENNEMIS & VIES ===
 
 def run_game():
@@ -102,7 +159,6 @@ def run_game():
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Crabinator – Niveau")
     clock = pygame.time.Clock()
-    scroll_x = 0
 
     # Bouton MENU
     menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
@@ -113,7 +169,7 @@ def run_game():
     background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
     flipped_bg = pygame.transform.flip(background, False, True)
     bg_w = background.get_width()
-    SAND = (237,201,175)
+    SAND = (237, 201, 175)
     # Le sol
     ground = pygame.Rect(0, screen_height - 20, 5000, 20)
 
@@ -180,43 +236,26 @@ def run_game():
 
     # Fonctions auxiliaires
     def draw_arrow(start, end):
-        pygame.draw.line(screen, (0,0,0), start, end, 3)
-        ang = math.atan2(end[1]-start[1], end[0]-start[0])
+        pygame.draw.line(screen, (0, 0, 0), start, end, 3)
+        ang = math.atan2(end[1] - start[1], end[0] - start[0])
         size = 10
-        left = (end[0] - size*math.cos(ang - math.pi/6),
-                end[1] - size*math.sin(ang - math.pi/6))
-        right = (end[0] - size*math.cos(ang + math.pi/6),
-                 end[1] - size*math.sin(ang + math.pi/6))
-        pygame.draw.polygon(screen, (0,0,0), [end, left, right])
-
-    # Crabes à collecter
-    crabs = [ #modifier les placements
-        {"rect": pygame.Rect(300, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(700, 350, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(1500, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
-    ]
-    crabs_collected= 0
+        left = (end[0] - size * math.cos(ang - math.pi / 6),
+                end[1] - size * math.sin(ang - math.pi / 6))
+        right = (end[0] - size * math.cos(ang + math.pi / 6),
+                 end[1] - size * math.sin(ang + math.pi / 6))
+        pygame.draw.polygon(screen, (0, 0, 0), [end, left, right])
 
     def draw_scene(scroll_x):
         # Fond en boucle
-        for i in range((screen_width + scroll_x)//bg_w + 2):
-            x_bg = i*bg_w - (scroll_x % bg_w)
+        for i in range((screen_width + scroll_x) // bg_w + 2):
+            x_bg = i * bg_w - (scroll_x % bg_w)
             screen.blit(background, (x_bg, -380))
             screen.blit(flipped_bg, (x_bg, background.get_height()))
-
-        player_rect = pygame.Rect(x + scroll_x, y, new_w, new_h)
-        # Dessiner les crabes non collectés
-        for crab in crabs:
-            if not crab["collected"]:
-                crab_rect = crab["rect"].move(-scroll_x, 0)
-                screen.blit(crab_img, crab_rect.topleft)
 
         # Affichage du sol
         r = ground.move(-scroll_x, 0)
         pygame.draw.rect(screen, SAND, r, border_radius=4)
         pygame.draw.rect(screen, (0, 100, 0), r, 2, border_radius=4)
-        pygame.draw.rect(screen, SAND, pygame.Rect(ground.x - scroll_x, ground.y, ground.width, ground.height))
 
         # Affichage des plateformes
         for platform in platforms:
@@ -224,12 +263,37 @@ def run_game():
             pygame.draw.rect(screen, SAND, r, border_radius=4)
             pygame.draw.rect(screen, (0, 100, 0), r, 2, border_radius=4)
 
+    crabs = [  # modifier les placements
+        {"rect": pygame.Rect(300, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(700, 350, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(1500, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+    ]
+    crabs_collected = 0
 
+    scroll_x = 0
+    scroll_x += 5
+    for crab_rect in crabs:
+        r = crab_rect["rect"].move(-scroll_x, 0)
+        screen.blit(crab_img, r)
 
+    crabs_collected = 0
 
     # Boucle principale
     scroll_x = 0
     running = True
+    # Détection du niveau actuel (1 = tutoriel)
+    current_level = 1  # Change ça dynamiquement si tu veux plus tard
+
+    # Texte tutoriel (affiché uniquement si current_level == 1)
+    show_tutorial_text = current_level == 1
+    tutorial_font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 11)
+    tutorial_lines = [
+        "Utilise les flèches pour te déplacer,",
+        "la barre Espace pour sauter, et clique sur ton perso",
+        "puis vise avec la souris pour tirer sur les ennemis !"
+    ]
+
     while running:
         dt = clock.tick(60)
         # Événements
@@ -240,7 +304,7 @@ def run_game():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if menu_button_rect.collidepoint(event.pos):
                     lvl = choose_level()
-                    if lvl in (1,2):
+                    if lvl in (1, 2):
                         run_game()
                     return
                 hitbox = pygame.Rect(x, y, new_w, new_h)
@@ -248,35 +312,53 @@ def run_game():
                     selecting_trajectory = True
             elif event.type == pygame.MOUSEBUTTONUP and selecting_trajectory:
                 arrow_end = event.pos
-                dx = arrow_end[0] - (x + new_w//2)
-                dy = arrow_end[1] - (y + new_h//2)
+                dx = arrow_end[0] - (x + new_w // 2)
+                dy = arrow_end[1] - (y + new_h // 2)
                 power = 0.2
-                ball_pos = [x + new_w//2, y + new_h//2]
-                ball_vel = [dx*power, dy*power]
+                ball_pos = [x + new_w // 2, y + new_h // 2]
+                ball_vel = [dx * power, dy * power]
                 selecting_trajectory = False
-        # Détection collecte crabe
-        player_rect = pygame.Rect(x + scroll_x, y, new_w, new_h)
-        for crab in crabs:
-            if not crab["collected"]:
-                if player_rect.colliderect(crab["rect"]):
-                    crab["collected"] = True
-                    crabs_collected += 1
-                    print(f"Crabe collecté ! Total : {crabs_collected}")
 
+            # Détection collecte crabe
+            player_rect = pygame.Rect(x + scroll_x, y, new_w, new_h)
+            for crab in crabs:
+                if not crab["collected"]:
+                    if player_rect.colliderect(crab["rect"]):
+                        crab["collected"] = True
+                        crabs_collected += 1
+                        print(f"Crabe collecté ! Total : {crabs_collected}")
+
+            # Touche
+            keys = pygame.key.get_pressed()
+            is_walking = False
+            if keys[pygame.K_RIGHT]:
+                is_walking = True
+                facing_right = True
+                if x < screen_width // 2:
+                    x += velocity
+                else:
+                    scroll_x += velocity
+            elif keys[pygame.K_LEFT]:
+                is_walking = True
+                facing_right = False
+                if x > screen_width / 2 or scroll_x <= 0:
+                    x -= velocity
+                else:
+                    scroll_x -= velocity
         # Touche
         keys = pygame.key.get_pressed()
         is_walking = False
         if keys[pygame.K_RIGHT]:
             is_walking = True
             facing_right = True
-            if x < screen_width // 2:
+            if x < screen_width / 2 or scroll_x >= (platforms[-1].right) - screen_width:
                 x += velocity
             else:
                 scroll_x += velocity
         elif keys[pygame.K_LEFT]:
             is_walking = True
             facing_right = False
-            if x > screen_width/2 or scroll_x <= 0:
+            if x > screen_width / 2 or scroll_x <= 0:
                 x -= velocity
             else:
                 scroll_x -= velocity
@@ -325,32 +407,30 @@ def run_game():
 
         # Avance frames
         if is_jumping:
-            jump_frame = min(jump_frame+1, len(jump_anim)-1)
+            jump_frame = min(jump_frame + 1, len(jump_anim) - 1)
         elif is_walking:
-            cur_frame = (cur_frame+1) % len(walk)
+            cur_frame = (cur_frame + 1) % len(walk)
         else:
             idle_counter += 1
             if idle_counter >= 5:
                 idle_counter = 0
-                idle_frame = (idle_frame+1) % len(idle)
+                idle_frame = (idle_frame + 1) % len(idle)
 
         # Mise à jour balle
         if ball_pos:
             ball_vel[1] += gravity
             ball_pos[0] += ball_vel[0]
             ball_pos[1] += ball_vel[1]
-            # Rebond murs
-            if ball_pos[0]-ball_radius <= 0 or ball_pos[0]+ball_radius >= screen_width:
-                ball_vel[0] *= -0.8
+
             # Rebond sol
-            if ball_pos[1]+ball_radius >= screen_height:
+            if ball_pos[1] + ball_radius >= screen_height:
                 ball_vel[1] *= -0.7
                 ball_pos[1] = screen_height - ball_radius
             # Rebond plateformes
-            ball_rect = pygame.Rect(ball_pos[0]-ball_radius, ball_pos[1]-ball_radius,
-                                     ball_radius*2, ball_radius*2)
+            ball_rect = pygame.Rect(ball_pos[0] - ball_radius, ball_pos[1] - ball_radius,
+                                    ball_radius * 2, ball_radius * 2)
             for rect in [ground] + platforms:
-                r = rect.move(-scroll_x,0)
+                r = rect.move(-scroll_x, 0)
                 if ball_rect.colliderect(r):
                     if ball_vel[1] > 0 and ball_pos[1] < r.top:
                         ball_pos[1] = r.top - ball_radius
@@ -372,8 +452,7 @@ def run_game():
             invincible = False
 
         # Collision perso <-> bots
-        player_rect = pygame.Rect(x + scroll_x, y, new_w, new_h)
-
+        player_rect = pygame.Rect(x, y, new_w, new_h)
         for b in bots:
             b_scr = b.move(-scroll_x, 0)
             if player_rect.colliderect(b_scr) and not invincible:
@@ -382,41 +461,49 @@ def run_game():
                 inv_time = now
                 print(f"Touché ! Vies restantes : {lives}")
                 if lives <= 0:
-                    print("Game Over!")
-                    running = False
+                    result = show_game_over_screen()
+                    if result == "restart":
+                        run_game()
+                    elif result == "menu":
+                        return
+                    return
 
         # Dessin
-        screen.fill((255,255,255))
-        #scroll_x = max(0, x - screen_width // 2)
-        #scroll_x = min(scroll_x, 5000 - screen_width)  # Limite haute
-
-
+        screen.fill((255, 255, 255))
         draw_scene(scroll_x)
 
         # Dessiner bots
         for b in bots:
             b_scr = b.move(-scroll_x, 0)
-            pygame.draw.rect(screen, (0,0,255), b_scr)
+            pygame.draw.rect(screen, (0, 0, 255), b_scr)
 
         # Dessiner perso
-        color = (255,165,0) if invincible else (255,0,0)
+        color = (255, 165, 0) if invincible else (255, 0, 0)
         screen.blit(img, (x, y))
         # pygame.draw.rect(screen, color, player_rect, 2)
 
         # Dessiner balle et flèche
         if ball_pos:
-            pygame.draw.circle(screen, (255,0,0), (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
+            pygame.draw.circle(screen, (255, 0, 0), (int(ball_pos[0]), int(ball_pos[1])), ball_radius)
         if selecting_trajectory:
             end = pygame.mouse.get_pos()
-            draw_arrow((x+new_w//2, y+new_h//2), end)
+            draw_arrow((x + new_w // 2, y + new_h // 2), end)
 
         # Bouton menu
         screen.blit(menu_button, menu_button_rect)
 
         # Afficher lives
         font = pygame.font.SysFont(None, 36)
-        txt = font.render(f"Vies : {lives}", True, (0,0,0))
-        screen.blit(txt, (10,10))
+        txt = font.render(f"Vies : {lives}", True, (0, 0, 0))
+        screen.blit(txt, (10, 10))
+
+        # Affichage du texte tutoriel (en haut de l'écran)
+        if show_tutorial_text:
+            line_spacing = 30
+            for i, line in enumerate(tutorial_lines):
+                txt = tutorial_font.render(line, True, (0, 0, 0))
+                screen.blit(txt, (screen_width // 2 - txt.get_width() // 2,
+                                  200 + i * line_spacing))
 
         pygame.display.update()
 
@@ -424,7 +511,10 @@ def run_game():
 
 
 # === LANCEMENT ===
-if show_menu():
-    lvl = choose_level()
-    if lvl in (1,2):
-        run_game()
+while True:
+    if show_menu():
+        lvl = choose_level()
+        if lvl in (1, 2):
+            run_game()
+    else:
+        break  # Quitte si show_menu() retourne False
