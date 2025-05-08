@@ -252,10 +252,15 @@ def run_game():
         pygame.draw.polygon(screen, (0,0,0), [end, left, right])
 
     crabs = [  # modifier les placements
-        {"rect": pygame.Rect(300, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(700, 350, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(280, 505, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(700, 335, crab_img.get_width(), crab_img.get_height()), "collected": False},
         {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(1500, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(1600, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(2100, 400, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(2700, 300, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(3200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(4000, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        {"rect": pygame.Rect(4300, 340, crab_img.get_width(), crab_img.get_height()), "collected": False},
     ]
     crabs_collected= 0
 
