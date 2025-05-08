@@ -88,7 +88,6 @@ def choose_level():
                 elif level2_rect.collidepoint(event.pos):
                     return 2
 
-
 def show_game_over_screen():
     screen = pygame.display.set_mode((725, 550))
     pygame.font.init()
@@ -147,49 +146,23 @@ def show_game_over_screen():
                 elif menu_button.collidepoint(event.pos):
                     return "menu"
 
-
 # === JEU PRINCIPAL AVEC ENNEMIS & VIES ===
 
-def run_game():
-    # Initialisation
+def run_game(level):
+
+    # Initialisation (change pas pour les 2 niveaux)
     pygame.init()
     screen_width, screen_height = 725, 550
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Crabinator – Niveau")
     clock = pygame.time.Clock()
 
-
-    # Bouton MENU
+    # Bouton MENU (change pas pour les deux niveaux)
     menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
     menu_button = pygame.transform.scale(menu_button, (100, 70))
     menu_button_rect = menu_button.get_rect(topright=(screen_width - 20, 10))
 
-    # Fond & terrain
-    background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
-    flipped_bg = pygame.transform.flip(background, False, True)
-    bg_w = background.get_width()
-    SAND = (237,201,175)
-    # Le sol
-    ground = pygame.Rect(0, screen_height - 20, 5000, 20)
-
-    # Les plateformes
-    platforms = [
-        pygame.Rect(500, 420, 100, 20),
-        pygame.Rect(700, 360, 100, 20),
-        pygame.Rect(1700, 420, 100, 20),
-        pygame.Rect(1900, 360, 100, 20),
-        pygame.Rect(2100, 300, 100, 20),
-        pygame.Rect(2800, 420, 100, 20),
-        pygame.Rect(3000, 360, 100, 20),
-        pygame.Rect(3200, 420, 100, 20),
-        pygame.Rect(3600, 360, 100, 20),
-        pygame.Rect(4000, 420, 100, 20),
-        pygame.Rect(4200, 360, 100, 20),
-        pygame.Rect(4400, 300, 100, 20),
-        pygame.Rect(4800, 420, 100, 20),
-    ]
-
-    # Personnage
+    # Personnage  (change pas pour les deux niveaux)
     new_w, new_h = 64, 64
     # Chargement du sprite de crabe pour les collectibles
     crab_img = pygame.image.load("assetsaffichage/crabe.png").convert_alpha()
@@ -203,7 +176,7 @@ def run_game():
     is_walking = False
     facing_right = True
 
-    # Sprites
+    # Sprites (change pas pour les deux niveaux)
     walk = [pygame.transform.scale(
         pygame.image.load(f'Hero/Run ({i}).png').convert_alpha(), (new_w, new_h)
     ) for i in range(1, 15)]
@@ -218,29 +191,119 @@ def run_game():
     idle_counter = 0
     jump_frame = 0
 
-    # Balle de crabe-tir
+    # Balle de crabe-tir (change pas pour les deux niveaux)
     ball_radius = 10
     ball_pos = None
     ball_vel = None
     selecting_trajectory = False
     arrow_end = None
 
-    # Ennemi (bots)
-    bots = [
-        pygame.Rect(400, screen_height - 50, 40, 30),
-        pygame.Rect(800, screen_height - 50, 40, 30),
-        pygame.Rect(1200, screen_height - 50, 40, 30),
-    ]
-    bot_speed = 3
+    if level ==1:
+        # Fond & terrain
+        background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
+        flipped_bg = pygame.transform.flip(background, False, True)
+        bg_w = background.get_width()
+        SAND = (237, 201, 175)
+        # Le sol
+        ground = pygame.Rect(0, screen_height - 20, 5000, 20)
 
-    # Vies & invincibilité
+        # Les plateformes
+        platforms = [
+            pygame.Rect(500, 420, 100, 20),
+            pygame.Rect(700, 360, 100, 20),
+            pygame.Rect(1700, 420, 100, 20),
+            pygame.Rect(1900, 360, 100, 20),
+            pygame.Rect(2100, 300, 100, 20),
+            pygame.Rect(2800, 420, 100, 20),
+            pygame.Rect(3000, 360, 100, 20),
+            pygame.Rect(3200, 420, 100, 20),
+            pygame.Rect(3600, 360, 100, 20),
+            pygame.Rect(4000, 420, 100, 20),
+            pygame.Rect(4200, 360, 100, 20),
+            pygame.Rect(4400, 300, 100, 20),
+            pygame.Rect(4800, 420, 100, 20),
+        ]
+
+        crabs = [  # niveau 1
+            {"rect": pygame.Rect(280, 505, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            {"rect": pygame.Rect(700, 335, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            {"rect": pygame.Rect(1600, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            {"rect": pygame.Rect(2100, 400, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            {"rect": pygame.Rect(2700, 300, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            {"rect": pygame.Rect(3200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            {"rect": pygame.Rect(4000, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            {"rect": pygame.Rect(4300, 340, crab_img.get_width(), crab_img.get_height()), "collected": False},
+        ]
+        crabs_collected = 0
+
+        # Ennemi (bots) (niveau 1)
+        bots = [
+            pygame.Rect(400, screen_height - 50, 40, 30),
+            pygame.Rect(1200, screen_height - 50, 40, 30),
+            pygame.Rect(2300, screen_height - 50, 40, 30),
+            pygame.Rect(3650, screen_height - 221, 40, 30),
+            pygame.Rect(4300, screen_height - 50, 40, 30),
+        ]
+        bot_speed = 3
+
+    if level == 2:
+            # Fond & terrain
+            background = pygame.image.load("assetsaffichage/fond2.jpg").convert()
+            flipped_bg = pygame.transform.flip(background, False, True)
+            bg_w = background.get_width()
+            SAND = (237, 201, 175)
+            # Le sol
+            ground = pygame.Rect(0, screen_height - 20, 5000, 20)
+
+            # Les plateformes
+            platforms = [
+                pygame.Rect(200, 420, 100, 20),
+                pygame.Rect(600, 360, 100, 20),
+                pygame.Rect(1000, 420, 100, 20),
+                pygame.Rect(1500, 360, 100, 20),
+                pygame.Rect(2000, 300, 100, 20),
+                pygame.Rect(2500, 420, 100, 20),
+                pygame.Rect(2900, 360, 100, 20),
+                pygame.Rect(3600, 420, 100, 20),
+                pygame.Rect(3900, 360, 100, 20),
+                pygame.Rect(4400, 420, 100, 20),
+                pygame.Rect(4700, 360, 100, 20),
+            ]
+            crabs = [  # modifier les placements
+                {"rect": pygame.Rect(280, 505, crab_img.get_width(), crab_img.get_height()), "collected": False},
+                {"rect": pygame.Rect(700, 335, crab_img.get_width(), crab_img.get_height()), "collected": False},
+                {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+                {"rect": pygame.Rect(1800, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+                {"rect": pygame.Rect(2100, 400, crab_img.get_width(), crab_img.get_height()), "collected": False},
+                {"rect": pygame.Rect(2700, 300, crab_img.get_width(), crab_img.get_height()), "collected": False},
+                {"rect": pygame.Rect(3200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
+                {"rect": pygame.Rect(4000, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
+                {"rect": pygame.Rect(4300, 340, crab_img.get_width(), crab_img.get_height()), "collected": False},
+            ]
+            crabs_collected = 0
+
+            # Ennemi (bots)
+            bots = [
+                pygame.Rect(400, screen_height - 50, 40, 30),
+                pygame.Rect(800, screen_height - 50, 40, 30),
+                pygame.Rect(1200, screen_height - 50, 40, 30),
+                pygame.Rect(1700, screen_height - 50, 40, 30),
+                pygame.Rect(2300, screen_height - 50, 40, 30),
+                pygame.Rect(2700, screen_height - 50, 40, 30),
+                pygame.Rect(3300, screen_height - 50, 40, 30),
+                pygame.Rect(3700, screen_height - 50, 40, 30),
+                pygame.Rect(4300, screen_height - 50, 40, 30),
+            ]
+            bot_speed = 3
+
+    # Vies & invincibilité (change pas pour les deux niveaux)
     lives = 3
     invincible = False
     inv_time = 0
     INV_DURATION = 2000  # ms
 
-
-    # Fonctions auxiliaires
+    # Fonctions auxiliaires (change pas pour les deux niveaux)
     def draw_arrow(start, end):
         pygame.draw.line(screen, (0,0,0), start, end, 3)
         ang = math.atan2(end[1]-start[1], end[0]-start[0])
@@ -250,19 +313,6 @@ def run_game():
         right = (end[0] - size*math.cos(ang + math.pi/6),
                  end[1] - size*math.sin(ang + math.pi/6))
         pygame.draw.polygon(screen, (0,0,0), [end, left, right])
-
-    crabs = [  # modifier les placements
-        {"rect": pygame.Rect(280, 505, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(700, 335, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(1200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(1600, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(2100, 400, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(2700, 300, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(3200, 460, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(4000, 270, crab_img.get_width(), crab_img.get_height()), "collected": False},
-        {"rect": pygame.Rect(4300, 340, crab_img.get_width(), crab_img.get_height()), "collected": False},
-    ]
-    crabs_collected= 0
 
     def draw_scene(scroll_x):
         # Fond en boucle
@@ -294,8 +344,6 @@ def run_game():
         r = crab_rect["rect"].move(-scroll_x, 0)
         screen.blit(crab_img, r)
 
-
-
     # Boucle principale
     scroll_x = 0
     running = True
@@ -303,7 +351,7 @@ def run_game():
     current_level = 1  # Change ça dynamiquement si tu veux plus tard
 
     # Texte tutoriel (affiché uniquement si current_level == 1)
-    show_tutorial_text = current_level == 1
+    show_tutorial_text = level == 1
     tutorial_font = pygame.font.Font("assetsaffichage/PressStart2P.ttf", 11)
     tutorial_lines = [
         "Utilise les flèches pour te déplacer,",
@@ -320,10 +368,8 @@ def run_game():
                 return
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if menu_button_rect.collidepoint(event.pos):
-                    lvl = choose_level()
-                    if lvl in (1,2):
-                        run_game()
-                    return
+                    return True  # Signale qu'on veut jouer
+
                 hitbox = pygame.Rect(x, y, new_w, new_h)
                 if hitbox.collidepoint(event.pos):
                     selecting_trajectory = True
@@ -480,7 +526,7 @@ def run_game():
                 if lives <= 0:
                     result = show_game_over_screen()
                     if result == "restart":
-                        run_game()
+                        run_game(level)
                     elif result == "menu":
                         return
                     return
@@ -531,12 +577,15 @@ def run_game():
 
     pygame.quit()
 
-
 # === LANCEMENT ===
-while True:
+running = True
+while running:
     if show_menu():
-        lvl = choose_level()
-        if lvl in (1, 2):
-            run_game()
+        level = choose_level()
+        if level in (1, 2):
+            run_game(level)
     else:
-        break  # Quitte si show_menu() retourne False
+        running = False
+
+
+
