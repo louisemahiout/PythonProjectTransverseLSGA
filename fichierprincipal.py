@@ -242,7 +242,7 @@ def run_game(level):
             pygame.Rect(400, screen_height - 50, 40, 30),
             pygame.Rect(1200, screen_height - 50, 40, 30),
             pygame.Rect(2300, screen_height - 50, 40, 30),
-            pygame.Rect(3650, screen_height - 221, 40, 30),
+            pygame.Rect(3650, screen_height - 50, 40, 30),
             pygame.Rect(4300, screen_height - 50, 40, 30),
         ]
         bot_speed = 3
@@ -259,7 +259,7 @@ def run_game(level):
             # Les plateformes
             platforms = [
                 pygame.Rect(200, 420, 100, 20),
-                pygame.Rect(600, 360, 100, 20),
+                pygame.Rect(400, 360, 100, 20),
                 pygame.Rect(1000, 420, 100, 20),
                 pygame.Rect(1500, 360, 100, 20),
                 pygame.Rect(2000, 300, 100, 20),
@@ -484,10 +484,11 @@ def run_game(level):
                 idle_frame = (idle_frame+1) % len(idle)
 
         # Mise à jour balle
+        # Gestion du mouvement de la balle
         if ball_pos:
-            ball_vel[1] += gravity
-            ball_pos[0] += ball_vel[0]
-            ball_pos[1] += ball_vel[1]
+            ball_vel[1] += gravity  # Applique la gravité
+            ball_pos[0] += ball_vel[0]  # Déplace la balle en x
+            ball_pos[1] += ball_vel[1]  # Déplace la balle en y
 
             # Rebond sol
             if ball_pos[1]+ball_radius >= screen_height:
@@ -503,17 +504,24 @@ def run_game(level):
                         ball_pos[1] = r.top - ball_radius
                         ball_vel[1] *= -0.7
 
-            # Vérification collision balle - bots (ennemis)
-            for b in bots[
-                     :]:  # Utilisation de bots[:] pour itérer sur une copie de la liste (afin de pouvoir la modifier pendant l'itération)
-                b_rect = pygame.Rect(b.x - ball_radius, b.y - ball_radius, b.width,
-                                     b.height)  # Assurez-vous que les propriétés x, y, width, height existent pour chaque "bot"
+            # Vérification de la collision entre balle et ennemis
+            for b in bots[:]:  # On itère sur une copie de la liste
+                b_rect = pygame.Rect(b.x - b.width // 2, b.y - b.height // 2, b.width,
+                                     b.height)  # Définir le rectangle de l'ennemi
+                ball_rect = pygame.Rect(ball_pos[0] - ball_radius, ball_pos[1] - ball_radius, ball_radius * 2,
+                                        ball_radius * 2)  # Définir le rectangle de la balle
+
+                # Affichage pour débogage
+                pygame.draw.rect(screen, (255, 0, 0), b_rect, 2)  # Dessiner le rectangle de l'ennemi
+                pygame.draw.circle(screen, (0, 255, 0), (int(ball_pos[0]), int(ball_pos[1])), ball_radius,
+                                   2)  # Dessiner la balle
+
+                # Vérification de la collision
                 if ball_rect.colliderect(b_rect):
+                    print(f"Collision détectée entre balle et ennemi : ({b.x}, {b.y})")
                     bots.remove(b)  # Supprimer l'ennemi de la liste
-                    print(
-                        f"Ennemi éliminé ! Il reste {len(bots)} ennemis.")  # Optionnel : afficher le nombre restant d'ennemis
-                    ball_pos = None  # On arrête la balle après le tir
-                    break  # Quitte la boucle après avoir trouvé une collision
+                    ball_pos = None  # Arrêter la balle après le tir
+                    break  # Quitter la boucle après la première collision
 
         # Déplacement bots
         for b in bots:
