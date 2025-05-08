@@ -181,6 +181,12 @@ def run_game():
         pygame.Rect(2100, 300, 100, 20),
         pygame.Rect(2800, 420, 100, 20),
         pygame.Rect(3000, 360, 100, 20),
+        pygame.Rect(3200, 420, 100, 20),
+        pygame.Rect(3600, 360, 100, 20),
+        pygame.Rect(4000, 420, 100, 20),
+        pygame.Rect(4200, 360, 100, 20),
+        pygame.Rect(4400, 300, 100, 20),
+        pygame.Rect(4800, 420, 100, 20),
     ]
 
     # Personnage
