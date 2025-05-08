@@ -149,13 +149,13 @@ def show_game_over_screen():
 # === JEU PRINCIPAL AVEC ENNEMIS & VIES ===
 
 def run_game(level):
-
     # Initialisation (change pas pour les 2 niveaux)
     pygame.init()
     screen_width, screen_height = 725, 550
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Crabinator – Niveau")
     clock = pygame.time.Clock()
+    global running
 
     # Bouton MENU (change pas pour les deux niveaux)
     menu_button = pygame.image.load("assetsaffichage/boutonmenu.png").convert_alpha()
@@ -374,13 +374,17 @@ def run_game(level):
                 if hitbox.collidepoint(event.pos):
                     selecting_trajectory = True
             elif event.type == pygame.MOUSEBUTTONUP and selecting_trajectory:
-                arrow_end = event.pos
-                dx = arrow_end[0] - (x + new_w//2)
-                dy = arrow_end[1] - (y + new_h//2)
-                power = 0.2
-                ball_pos = [x + new_w//2, y + new_h//2]
-                ball_vel = [dx*power, dy*power]
-                selecting_trajectory = False
+                if crabs_collected > 0:
+                    arrow_end = event.pos
+                    dx = arrow_end[0] - (x + new_w // 2)
+                    dy = arrow_end[1] - (y + new_h // 2)
+                    power = 0.2
+                    ball_pos = [x + new_w // 2, y + new_h // 2]
+                    ball_vel = [dx * power, dy * power]
+                    selecting_trajectory = False
+                    crabs_collected -= 1  # On consomme un crabe
+                else:
+                    selecting_trajectory = False  # On annule juste le tir sans rien faire
 
             # Détection collecte crabe
             player_rect = pygame.Rect(x + scroll_x, y, new_w, new_h)
@@ -499,6 +503,18 @@ def run_game(level):
                         ball_pos[1] = r.top - ball_radius
                         ball_vel[1] *= -0.7
 
+            # Vérification collision balle - bots (ennemis)
+            for b in bots[
+                     :]:  # Utilisation de bots[:] pour itérer sur une copie de la liste (afin de pouvoir la modifier pendant l'itération)
+                b_rect = pygame.Rect(b.x - ball_radius, b.y - ball_radius, b.width,
+                                     b.height)  # Assurez-vous que les propriétés x, y, width, height existent pour chaque "bot"
+                if ball_rect.colliderect(b_rect):
+                    bots.remove(b)  # Supprimer l'ennemi de la liste
+                    print(
+                        f"Ennemi éliminé ! Il reste {len(bots)} ennemis.")  # Optionnel : afficher le nombre restant d'ennemis
+                    ball_pos = None  # On arrête la balle après le tir
+                    break  # Quitte la boucle après avoir trouvé une collision
+
         # Déplacement bots
         for b in bots:
             # b.x est en coords monde
@@ -535,10 +551,11 @@ def run_game(level):
         screen.fill((255,255,255))
         draw_scene(scroll_x)
 
-        # Dessiner bots
+
+        # Dessiner bots (ennemis restants)
         for b in bots:
             b_scr = b.move(-scroll_x, 0)
-            pygame.draw.rect(screen, (0,0,255), b_scr)
+            pygame.draw.rect(screen, (0, 0, 255), b_scr)
 
         # Dessiner perso
         color = (255,165,0) if invincible else (255,0,0)
@@ -574,8 +591,9 @@ def run_game(level):
                                   200 + i * line_spacing))
 
         pygame.display.update()
-
+    return False
     pygame.quit()
+
 
 # === LANCEMENT ===
 running = True
@@ -583,7 +601,7 @@ while running:
     if show_menu():
         level = choose_level()
         if level in (1, 2):
-            run_game(level)
+            running = run_game(level)  # <--- met à jour running selon ce que renvoie run_game
     else:
         running = False
 
