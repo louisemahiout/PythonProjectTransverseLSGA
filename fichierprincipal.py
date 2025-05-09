@@ -386,7 +386,6 @@ def run_game(level):
                 else:
                     selecting_trajectory = False  # On annule juste le tir sans rien faire
 
-
             # Détection collecte crabe
             player_rect = pygame.Rect(x + scroll_x, y, new_w, new_h)
             for crab in crabs:
@@ -395,7 +394,6 @@ def run_game(level):
                         crab["collected"] = True
                         crabs_collected += 1  # Incrémentation du compteur
                         print(f"Crabe collecté ! Total : {crabs_collected}")
-
 
             # Touche
             keys = pygame.key.get_pressed()
