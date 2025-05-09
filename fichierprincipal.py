@@ -496,7 +496,7 @@ def run_game(screen, level_chosen):
         if keys[pygame.K_RIGHT]:
             crab_joueur_is_walking = True
             crab_joueur_facing_right = True
-            if crab_joueur_x_screen < SCREEN_WIDTH * 0.6:  # Si le joueur est dans la partie gauche/milieu de l'écran
+            if crab_joueur_x_screen < SCREEN_WIDTH * 0:  # Si le joueur est dans la partie gauche/milieu de l'écran
                 crab_joueur_x_screen += crab_joueur_velocity
             elif scroll_x < max_scroll_x:  # Si on peut encore faire défiler le monde
                 scroll_x += crab_joueur_velocity
