@@ -1,6 +1,6 @@
 import pygame
 import math
-import sys
+
 # === Constantes globales ===
 SCREEN_WIDTH = 725
 SCREEN_HEIGHT = 550
@@ -76,12 +76,12 @@ def show_menu(screen):
     background = load_image(BACKGROUND_IMG_PATH_MENU)
     play_button_img = load_image(PLAY_BUTTON_IMG_PATH, alpha=True)
     play_button_img = pygame.transform.scale(play_button_img, (300, 200))
-    play_button_rect = play_button_img.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.35))  # Centré et plus bas
+    play_button_rect = play_button_img.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.5))  # Centré et plus bas
 
     font_title = load_font(FONT_PATH, 48)
     title_text = font_title.render("CRABINATOR", True, BLACK)
     # Positionnement du titre au-dessus du bouton play
-    title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, play_button_rect.top - 80))
+    title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, play_button_rect.top - 100))
 
     running = True
     while running:
@@ -197,80 +197,6 @@ def show_game_over_screen(screen):
         pygame.display.flip()
 
 
-def show_context(screen):
-    # Charger l'image de fond
-    background = pygame.image.load("assetsaffichage/transverse.png").convert()
-    font = pygame.font.Font(FONT_PATH, 9)
-
-    # Liste de textes à afficher progressivement
-    text_lines = [
-        "Bienvenue dans l'univers de Crabinator.",
-        "Au secours l'île a été menacée par ces Homme Poissons !",
-        "Des créatures menaçantes qui tuent les habitants",
-        "Ils ont peur des crabes: lance-les des crabes pour qu'ils disparaissent",
-        "Votre mission est d'aidé notre héroine tué tout ces créatures et sauver l'île"
-    ]
-
-    # Affichage initial de l'image de fond
-    screen.blit(background, (0, 0))
-
-    # Zone noire sous l'image si l'image ne couvre pas tout l'écran
-    image_height = background.get_height()
-    screen.fill((0, 0, 0), pygame.Rect(0, image_height, screen.get_width(), screen.get_height() - image_height))
-    pygame.display.flip()
-
-    y_offset = 425  # Position initiale pour afficher le texte
-    line_delay = 50
-    skip = False
-
-    for line in text_lines:
-        rendered_line = ""
-        for char in line:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    skip = True
-
-            if skip:
-                break
-
-            rendered_line += char
-
-            # Redessiner le fond + fond noir
-            screen.blit(background, (0, 0))
-            screen.fill((0, 0, 0), pygame.Rect(0, image_height, screen.get_width(), screen.get_height() - image_height))
-
-            # Afficher les lignes précédentes
-            for i in range(len(text_lines)):
-                if i < text_lines.index(line):
-                    text_surface = font.render(text_lines[i], True, (255, 255, 255))
-                    screen.blit(text_surface, (20, 425 + i * 20))
-
-            # Afficher la ligne en cours
-            text_surface = font.render(rendered_line, True, (255, 255, 255))
-            screen.blit(text_surface, (20, y_offset))
-
-            pygame.display.flip()
-            pygame.time.delay(line_delay)
-
-        if skip:
-            break
-
-        y_offset += 20
-        pygame.time.delay(500)
-
-    if skip:
-        screen.blit(background, (0, 0))
-        screen.fill((0, 0, 0), pygame.Rect(0, image_height, screen.get_width(), screen.get_height() - image_height))
-        y_offset = 425
-        for line in text_lines:
-            text_surface = font.render(line, True, (255, 255, 255))
-            screen.blit(text_surface, (20, y_offset))
-            y_offset += 20
-        pygame.display.flip()
-        pygame.time.delay(1000)
 # === JEU PRINCIPAL ===
 def run_game(screen, level_chosen):
     clock = pygame.time.Clock()
@@ -366,11 +292,27 @@ def run_game(screen, level_chosen):
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte9"},
         ]
         enemies_world = [  # Ajout de 'original_x', 'patrol_range', 'direction' pour le mouvement
+            {"rect": pygame.Rect(500, 420 - 30, 40, 30), "name": "Bot1", "original_x": 500, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},  # Ne patrouille pas, suit
+            {"rect": pygame.Rect(700, 360 - 30, 40, 30), "name": "Bot2", "original_x": 700, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},
+            {"rect": pygame.Rect(1700, 420 - 30, 40, 30), "name": "Bot3", "original_x": 1700, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},
+            {"rect": pygame.Rect(1900, 360 - 30, 40, 30), "name": "Bot4", "original_x": 1900, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},
             {"rect": pygame.Rect(2100, 300 - 30, 40, 30), "name": "Bot5", "original_x": 2100, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},
+            {"rect": pygame.Rect(2800, 420 - 30, 40, 30), "name": "Bot6", "original_x": 2800, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
             {"rect": pygame.Rect(3000, 360 - 30, 40, 30), "name": "Bot7", "original_x": 3000, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
+            {"rect": pygame.Rect(3200, 420 - 30, 40, 30), "name": "Bot8", "original_x": 3200, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},
             {"rect": pygame.Rect(3600, 360 - 30, 40, 30), "name": "Bot9", "original_x": 3600, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},
+            {"rect": pygame.Rect(4000, 420 - 30, 40, 30), "name": "Bot10", "original_x": 4000, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},
+            {"rect": pygame.Rect(4200, 360 - 30, 40, 30), "name": "Bot11", "original_x": 4200, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
             {"rect": pygame.Rect(4400, 300 - 30, 40, 30), "name": "Bot12", "original_x": 4400, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
@@ -379,8 +321,6 @@ def run_game(screen, level_chosen):
 
             {"rect": pygame.Rect(600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol1", "original_x": 600,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(1000, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol1", "original_x": 1000,
-             "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
             {"rect": pygame.Rect(1500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol2", "original_x": 1500,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
             {"rect": pygame.Rect(2500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol3", "original_x": 2500,
@@ -388,10 +328,6 @@ def run_game(screen, level_chosen):
             {"rect": pygame.Rect(3500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol4", "original_x": 3500,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
             {"rect": pygame.Rect(4600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol5", "original_x": 4600,
-             "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(4400, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol6", "original_x": 4400,
-             "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(2200, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol6", "original_x": 2200,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
         ]
 
@@ -480,7 +416,7 @@ def run_game(screen, level_chosen):
         "puis vise avec la souris pour tirer (consomme un collectible)!"
     ]
     # Position Y de départ pour le texte du tutoriel
-    tutorial_start_y = 120
+    tutorial_start_y = 30
 
     # --- Fonction pour dessiner la flèche de visée ---
     def draw_aiming_arrow(surface, start_pos_screen, mouse_pos_screen):
@@ -560,15 +496,11 @@ def run_game(screen, level_chosen):
         if keys[pygame.K_RIGHT]:
             crab_joueur_is_walking = True
             crab_joueur_facing_right = True
-
-            if crab_joueur_x_screen < SCREEN_WIDTH * 0.6 or scroll_x >= max_scroll_x:
-                # Bouger le personnage à l’écran si on n’a plus de scroll
+            if crab_joueur_x_screen < SCREEN_WIDTH * 0.6:  # Si le joueur est dans la partie gauche/milieu de l'écran
                 crab_joueur_x_screen += crab_joueur_velocity
-            elif scroll_x < max_scroll_x:
-                # Sinon, scroller le monde
+            elif scroll_x < max_scroll_x:  # Si on peut encore faire défiler le monde
                 scroll_x += crab_joueur_velocity
-
-            # Limiter la position à droite de l'écran
+            # Empêcher le joueur de sortir de l'écran à droite si le défilement est max
             crab_joueur_x_screen = min(crab_joueur_x_screen, SCREEN_WIDTH - PLAYER_WIDTH)
 
 
@@ -900,8 +832,6 @@ def main():
             else:  # Si l'utilisateur ferme la fenêtre de choix de niveau sans choisir
                 current_game_state = "menu"
         elif current_game_state == "run_game":
-            if selected_level == 1:  # Si le niveau 1 est choisi, on affiche la contextualisation
-                show_context(screen)
             game_outcome = run_game(screen, selected_level)  # Utilise selected_level
             if game_outcome == "menu":
                 current_game_state = "menu"
@@ -915,7 +845,6 @@ def main():
 
     pygame.quit()
     print("Jeu quitté.")
-
 
 
 if __name__ == '__main__':
