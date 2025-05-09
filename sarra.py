@@ -1,6 +1,5 @@
 import pygame
 import math
-import sys
 
 # === Constantes globales ===
 SCREEN_WIDTH = 725
