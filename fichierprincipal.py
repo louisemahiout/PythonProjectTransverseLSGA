@@ -20,7 +20,7 @@ PLAYER_DEBUG_COLOR = (255, 0, 0)  # Rouge pour le debug hitbox joueur
 # Dimensions joueur
 PLAYER_WIDTH, PLAYER_HEIGHT = 64, 64
 
-# Chemins des ressources (à vérifier attentivement !)
+# Chemins des ressources
 FONT_PATH = "assetsaffichage/PressStart2P.ttf"
 MUSIC_PATH = "assetsaffichage/musique.mp3"
 BACKGROUND_IMG_PATH_MENU = "assetsaffichage/fond1.jpg"
@@ -82,7 +82,7 @@ def show_menu(screen):
     font_title = load_font(FONT_PATH, 48)
     title_text = font_title.render("CRABINATOR", True, BLACK)
     # Positionnement du titre au-dessus du bouton play
-    title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, play_button_rect.top - 100))
+    title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, play_button_rect.top + 30))
 
     running = True
     while running:
@@ -160,7 +160,7 @@ def show_game_over_screen(screen):
     overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 180))  # Noir semi-transparent
 
-    button_width = 300  # Boutons un peu moins larges que dans le code original
+    button_width = 400  # Boutons un peu moins larges que dans le code original
     button_height = 60
     restart_button_rect = pygame.Rect((SCREEN_WIDTH - button_width) // 2, 300, button_width, button_height)
     menu_button_rect = pygame.Rect((SCREEN_WIDTH - button_width) // 2, 380, button_width, button_height)
@@ -180,7 +180,7 @@ def show_game_over_screen(screen):
         screen.blit(overlay, (0, 0))  # Appliquer l'assombrissement
 
         title_text = title_font.render("GAME OVER", True, RED)
-        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 150))
+        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 225))
         screen.blit(title_text, title_rect)
 
         # Dessin des boutons
@@ -203,9 +203,11 @@ def show_context(screen):
 
     # Liste de textes à afficher progressivement
     text_lines = [
-        "Bienvenue dans l'univers de Crabinator.",
-        "Au secours l'île a été menacée par ces créatures !",
-        "Ils ont peur des crabes : lance-les et sauve l'île !",
+        "Bienvenue dans l’univers de Crabinator !",
+        "La plage est envahie par des créatures terrifiantes qui menacent",
+        "tout sur leur passage.",
+        "Mais elles ont une faiblesse : elles détestent les crabes ! ",
+        "Alors attrape-en, vise bien… et bombarde-les pour la défendre!"
     ]
 
     # Affichage initial de l'image de fond
@@ -332,7 +334,7 @@ def run_game(screen, level_chosen):
     bot_speed_base = 0  # Sera défini par niveau
 
     if level_chosen == 1:
-        collectible_type_name = "Carapattes"
+        collectible_type_name = "Crabe(s)"
         bot_speed_base = 1.5  # Plus lent pour le niveau 1
         platforms_world = [
             pygame.Rect(500, 420, 100, 20), pygame.Rect(700, 360, 100, 20),
@@ -478,7 +480,7 @@ def run_game(screen, level_chosen):
     tutorial_lines = [
         "Utilise les fleches pour te deplacer,",
         "Espace pour sauter. Clique sur ton perso",
-        "puis vise avec la souris pour tirer (consomme un collectible)!"
+        "puis vise avec la souris pour tirer!"
     ]
     # Position Y de départ pour le texte du tutoriel
     tutorial_start_y = 120
@@ -553,7 +555,6 @@ def run_game(screen, level_chosen):
 
         # --- Logique de jeu (mouvements, collisions, etc.) ---
 
-        # Mouvement du joueur (basé sur les touches)
         # Mouvement du joueur (basé sur les touches)
         keys = pygame.key.get_pressed()
         previous_crab_is_walking = crab_joueur_is_walking
@@ -916,7 +917,6 @@ def main():
 
         pygame.quit()
 
-
-
 if __name__ == '__main__':
     main()
+#######################
