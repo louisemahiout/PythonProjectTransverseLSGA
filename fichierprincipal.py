@@ -196,6 +196,33 @@ def show_game_over_screen(screen):
         screen.blit(menu_text, menu_text_rect)
 
         pygame.display.flip()
+
+def show_win_screen(screen):
+    background = load_image(BACKGROUND_IMG_PATH_MENU)
+    font = load_font(FONT_PATH, 36)
+    button_font = load_font(FONT_PATH, 20)
+
+    button_rect = pygame.Rect((SCREEN_WIDTH - 300) // 2, 350, 300, 60)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            if event.type == pygame.MOUSEBUTTONDOWN and button_rect.collidepoint(event.pos):
+                return "menu"
+
+        screen.blit(background, (0, 0))
+        win_text = font.render("YOU ESCAPE!", True, (0, 200, 0))
+        screen.blit(win_text, win_text.get_rect(center=(SCREEN_WIDTH // 2, 300)))
+
+        pygame.draw.rect(screen, WHITE, button_rect, border_radius=10)
+        pygame.draw.rect(screen, BLACK, button_rect, 2, border_radius=10)
+        label = button_font.render("Retour au menu", True, BLACK)
+        screen.blit(label, label.get_rect(center=button_rect.center))
+
+        pygame.display.flip()
+
+
 def show_context(screen):
     # Charger l'image de fond
     background = pygame.image.load("assetsaffichage/transverse.png").convert()
@@ -289,6 +316,9 @@ def run_game(screen, level_chosen):
     # Correction: flip horizontal pour boucle, pas vertical
     flipped_bg_img = pygame.transform.flip(background_img_game, True, False)
     bg_width = background_img_game.get_width()
+    portal_img = load_image("assetsaffichage/fin.png", alpha=True)
+    portal_img = pygame.transform.scale(portal_img, (128, 128))  # Taille personnalisable
+    portal_rect_world = portal_img.get_rect(topleft=(4900, SCREEN_HEIGHT - 20 - 64-50))  # Fin du niveau
 
     # Sprites du joueur
     try:
@@ -794,6 +824,9 @@ def run_game(screen, level_chosen):
 
         # --- Dessin de tous les éléments ---
         screen.fill(WHITE)  # Couleur de fond par défaut si l'image de fond ne couvre pas tout
+        # --- Collision avec le portail de fin ---
+        if player_rect_world.colliderect(portal_rect_world):
+            return "win"
 
         # Dessin du fond en boucle (scroll parallax simple)
         for i in range(-1, int(SCREEN_WIDTH / bg_width) + 2):
@@ -820,6 +853,11 @@ def run_game(screen, level_chosen):
                 item_screen_rect = item_data["rect"].move(-scroll_x, 0)
                 if item_screen_rect.colliderect(screen.get_rect()):  # Optimisation
                     screen.blit(crab_img_collectible, item_screen_rect.topleft)
+
+        # Dessin du portail
+        portal_rect_screen = portal_rect_world.move(-scroll_x, 0)
+        if portal_rect_screen.colliderect(screen.get_rect()):
+            screen.blit(portal_img, portal_rect_screen.topleft)
 
         # Dessin des ennemis (coordonnées écran)
         for enemy_data in enemies_world:
@@ -909,6 +947,13 @@ def main():
                     current_game_state = "menu"
                 elif game_outcome == "restart":
                     current_game_state = "run_game"  # Reste dans cet état pour relancer avec selected_level
+                elif game_outcome == "win":
+                    next_action = show_win_screen(screen)
+                    if next_action == "menu":
+                        current_game_state = "menu"
+                    elif next_action == "quit":
+                        break
+
                 elif game_outcome == "quit":
                     break
             else:
@@ -919,4 +964,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-#######################
