@@ -212,7 +212,7 @@ def show_win_screen(screen):
                 return "menu"
 
         screen.blit(background, (0, 0))
-        win_text = font.render("YOU ESCAPE!", True, (0, 200, 0))
+        win_text = font.render("TU T'ES ENFUIS!", True, (0, 200, 0))
         screen.blit(win_text, win_text.get_rect(center=(SCREEN_WIDTH // 2, 300)))
 
         pygame.draw.rect(screen, WHITE, button_rect, border_radius=10)
@@ -232,9 +232,9 @@ def show_context(screen):
     text_lines = [
         "Bienvenue dans l’univers de Crabinator !",
         "La plage est envahie par des créatures terrifiantes qui menacent",
-        "tout sur leur passage.",
-        "Mais elles ont une faiblesse : elles détestent les crabes ! ",
-        "Alors attrape-en, vise bien… et bombarde-les pour la défendre!"
+        "tout sur leur passage. Mais elles ont une faiblesse : elles",
+        "détestent les crabes! Alors attrape-en, vise bien… et bombarde",
+        "-les pour te défendre et t'enfuire!"
     ]
 
     # Affichage initial de l'image de fond
@@ -249,6 +249,18 @@ def show_context(screen):
     line_delay = 50
     skip = False
 
+    # === BOUTON PASSER ===
+    skip_button_font = load_font(FONT_PATH, 18)
+    skip_button_text = skip_button_font.render("Passer", True, BLACK)
+    skip_button_rect = pygame.Rect(SCREEN_WIDTH - 150, SCREEN_HEIGHT - 60, 120, 40)
+
+    # Dessiner une fois au début
+    pygame.draw.rect(screen, (255, 255, 255), skip_button_rect, border_radius=10)
+    pygame.draw.rect(screen, BLACK, skip_button_rect, 2, border_radius=10)
+    screen.blit(skip_button_text, skip_button_text.get_rect(center=skip_button_rect.center))
+    pygame.display.flip()
+
+
     for line in text_lines:
         rendered_line = ""
         for char in line:
@@ -256,6 +268,9 @@ def show_context(screen):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if skip_button_rect.collidepoint(event.pos):
+                        skip = True
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     skip = True
 
@@ -267,6 +282,10 @@ def show_context(screen):
             # Redessiner le fond + fond noir
             screen.blit(background, (0, 0))
             screen.fill((0, 0, 0), pygame.Rect(0, image_height, screen.get_width(), screen.get_height() - image_height))
+            # Réafficher le bouton "Passer"
+            pygame.draw.rect(screen, (255, 255, 255), skip_button_rect, border_radius=10)
+            pygame.draw.rect(screen, BLACK, skip_button_rect, 2, border_radius=10)
+            screen.blit(skip_button_text, skip_button_text.get_rect(center=skip_button_rect.center))
 
             # Afficher les lignes précédentes
             for i in range(len(text_lines)):
@@ -444,9 +463,11 @@ def run_game(screen, level_chosen):
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur1"},
             {"rect": pygame.Rect(700, 335 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur2"},
-            {"rect": pygame.Rect(1200, 460 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(1200, 400 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur3"},
-            {"rect": pygame.Rect(1800, 270 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(1500, 460 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur3"},
+            {"rect": pygame.Rect(1800, 300 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur4"},
             {"rect": pygame.Rect(2100, 400 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur5"},
