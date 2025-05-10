@@ -747,24 +747,44 @@ def run_game(screen, level_chosen):
             enemy_rect_world = enemy_data["rect"]
             current_bot_speed = bot_speed_base * enemy_data.get("speed_factor", 1)
 
-            if enemy_data["patrol_range"] > 0:  # Mouvement de patrouille
+            on_platform = False
+            for plat in platforms_world:
+                # On vérifie s'il y a une plateforme juste en dessous de l'ennemi (petite marge de 2 pixels)
+                if enemy_rect_world.bottom == plat.top and \
+                        plat.left <= enemy_rect_world.centerx <= plat.right:
+                    on_platform = True
+                    break
+
+            if enemy_data["patrol_range"] > 0:
+                # Ennemis au sol avec patrouille
                 enemy_rect_world.x += current_bot_speed * enemy_data["direction"]
                 if enemy_data["direction"] == 1 and enemy_rect_world.right > enemy_data["original_x"] + enemy_data[
                     "patrol_range"]:
                     enemy_data["direction"] = -1
-                    enemy_rect_world.right = enemy_data["original_x"] + enemy_data["patrol_range"]  # Clamp
+                    enemy_rect_world.right = enemy_data["original_x"] + enemy_data["patrol_range"]
                 elif enemy_data["direction"] == -1 and enemy_rect_world.left < enemy_data["original_x"] - enemy_data[
                     "patrol_range"]:
                     enemy_data["direction"] = 1
-                    enemy_rect_world.left = enemy_data["original_x"] - enemy_data["patrol_range"]  # Clamp
-            else:  # Mouvement de poursuite (pour les bots sur plateforme sans patrouille)
-                # Condition de détection (distance X et Y)
-                if abs(enemy_rect_world.centerx - player_center_world_x) < 250 and \
-                        abs(enemy_rect_world.centery - player_rect_world.centery) < 100:  # Rayon de détection vertical plus petit
-                    if enemy_rect_world.centerx < player_center_world_x:
-                        enemy_rect_world.x += current_bot_speed
-                    else:
-                        enemy_rect_world.x -= current_bot_speed
+                    enemy_rect_world.left = enemy_data["original_x"] - enemy_data["patrol_range"]
+            else:
+                # Ennemis sur plateforme (sans patrouille) : aller-retour automatique
+                if on_platform:
+                    enemy_rect_world.x += current_bot_speed * enemy_data["direction"]
+
+                    # Vérifie s'il va tomber (plus de plateforme dessous au prochain déplacement)
+                    will_fall = True
+                    next_center_x = enemy_rect_world.centerx + current_bot_speed * enemy_data["direction"]
+                    for plat in platforms_world:
+                        if enemy_rect_world.bottom == plat.top and \
+                                plat.left <= next_center_x <= plat.right:
+                            will_fall = False
+                            break
+                    if will_fall:
+                        enemy_data["direction"] *= -1  # Change de direction
+                else:
+                    # S'il n'est pas sur une plateforme, on l'empêche d'avancer
+                    enemy_data["direction"] *= -1
+
             # Simple gravité pour les ennemis (s'ils ne sont pas sur une plateforme fixe) - Optionnel
             # enemy_rect_world.y += gravity # Ils tomberaient des plateformes
 
