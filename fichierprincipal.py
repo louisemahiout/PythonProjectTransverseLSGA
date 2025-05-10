@@ -25,6 +25,7 @@ FONT_PATH = "assetsaffichage/PressStart2P.ttf"
 MUSIC_PATH = "assetsaffichage/musique.mp3"
 BACKGROUND_IMG_PATH_MENU = "assetsaffichage/fond1.jpg"
 BACKGROUND_IMG_PATH_GAME = "assetsaffichage/fond2.jpg"
+BACKGROUND_IMG_PATH_GAME2= "assetsaffichage/fond 5.jpg"
 PLAY_BUTTON_IMG_PATH = 'assetsaffichage/boutonplay.png'
 MENU_BUTTON_IMG_PATH = "assetsaffichage/boutonmenu.png"
 CRAB_COLLECTIBLE_IMG_PATH = "assetsaffichage/crabe.png"
@@ -331,10 +332,6 @@ def run_game(screen, level_chosen):
     crab_img_collectible_orig = load_image(CRAB_COLLECTIBLE_IMG_PATH, alpha=True)
     crab_img_collectible = pygame.transform.scale(crab_img_collectible_orig, (PLAYER_WIDTH // 2, PLAYER_HEIGHT // 2))
 
-    background_img_game = load_image(BACKGROUND_IMG_PATH_GAME)
-    # Correction: flip horizontal pour boucle, pas vertical
-    flipped_bg_img = pygame.transform.flip(background_img_game, True, False)
-    bg_width = background_img_game.get_width()
     portal_img = load_image("assetsaffichage/fin.png", alpha=True)
     portal_img = pygame.transform.scale(portal_img, (128, 128))  # Taille personnalisable
     portal_rect_world = portal_img.get_rect(topleft=(4900, SCREEN_HEIGHT - 20 - 64-50))  # Fin du niveau
@@ -383,6 +380,10 @@ def run_game(screen, level_chosen):
     bot_speed_base = 0  # Sera défini par niveau
 
     if level_chosen == 1:
+        background_img_game = load_image(BACKGROUND_IMG_PATH_GAME)
+        # Correction: flip horizontal pour boucle, pas vertical
+        flipped_bg_img = pygame.transform.flip(background_img_game, True, False)
+        bg_width = background_img_game.get_width()
         collectible_type_name = "Crabe(s)"
         bot_speed_base = 1.5  # Plus lent pour le niveau 1
         platforms_world = [
@@ -397,22 +398,32 @@ def run_game(screen, level_chosen):
         collectibles_world = [
             {"rect": pygame.Rect(280, 505 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte1"},
-            {"rect": pygame.Rect(700, 335 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(750, 370 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte2"},
-            {"rect": pygame.Rect(1200, 460 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(1360, 535 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte3"},
             {"rect": pygame.Rect(1600, 270 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte4"},
             # Original y: 270, crabe y: 270-h
-            {"rect": pygame.Rect(2100, 400 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(2100, 310 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte5"},
-            {"rect": pygame.Rect(2700, 300 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(2300, 525 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Carapatte5"},
+            {"rect": pygame.Rect(2600, 525 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte6"},
-            {"rect": pygame.Rect(3200, 460 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(3025, 325 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Carapatte6"},
+            {"rect": pygame.Rect(3600, 525 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Carapatte6"},
+            {"rect": pygame.Rect(3250, 400 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte7"},
             {"rect": pygame.Rect(4000, 270 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte8"},
-            {"rect": pygame.Rect(4300, 340 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(4300, 325 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Carapatte9"},
+            {"rect": pygame.Rect(4479, 525 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Carapatte9"},
+            {"rect": pygame.Rect(4700, 525 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte9"},
         ]
         enemies_world = [  # Ajout de 'original_x', 'patrol_range', 'direction' pour le mouvement
@@ -424,12 +435,15 @@ def run_game(screen, level_chosen):
              "direction": 1, "speed_factor": 1},
             {"rect": pygame.Rect(3000, 360 - 30, 40, 30), "name": "Bot7", "original_x": 3000, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
+            {"rect": pygame.Rect(3600, 360 - 30, 40, 30), "name": "Bot7", "original_x": 3000, "patrol_range": 0,
+             "direction": 1, "speed_factor": 1},
             {"rect": pygame.Rect(4000, 420 - 30, 40, 30), "name": "Bot10", "original_x": 4000, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
             {"rect": pygame.Rect(4200, 360 - 30, 40, 30), "name": "Bot11", "original_x": 4200, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
             {"rect": pygame.Rect(4800, 420 - 30, 40, 30), "name": "Bot13", "original_x": 4800, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
+
 
             {"rect": pygame.Rect(600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol1", "original_x": 600,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
@@ -448,44 +462,51 @@ def run_game(screen, level_chosen):
         ]
 
     elif level_chosen == 2:
-        collectible_type_name = "Pinceurs"
+        background_img_game = load_image(BACKGROUND_IMG_PATH_GAME)
+        # Correction: flip horizontal pour boucle, pas vertical
+        flipped_bg_img = pygame.transform.flip(background_img_game, True, False)
+        bg_width = background_img_game.get_width()
+        collectible_type_name = "Crabes(s)"
         bot_speed_base = 1.7  # Plus rapide pour le niveau 2
         platforms_world = [
             pygame.Rect(200, 420, 100, 20), pygame.Rect(400, 360, 100, 20),
-            pygame.Rect(1000, 420, 100, 20), pygame.Rect(1500, 360, 100, 20),
+            pygame.Rect(1000, 420, 100, 20),
+            pygame.Rect(1200, 450, 100, 20),
+            pygame.Rect(1500, 360, 100, 20),
+
             pygame.Rect(2000, 300, 100, 20), pygame.Rect(2500, 420, 100, 20),
             pygame.Rect(2900, 360, 100, 20), pygame.Rect(3600, 420, 100, 20),
             pygame.Rect(3900, 360, 100, 20), pygame.Rect(4400, 420, 100, 20),
             pygame.Rect(4700, 360, 100, 20),
         ]
         collectibles_world = [
-            {"rect": pygame.Rect(280, 505 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(380, 538 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur1"},
-            {"rect": pygame.Rect(700, 335 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(450, 375 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur1"},
+            {"rect": pygame.Rect(1000, 430 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur1"},
+            {"rect": pygame.Rect(750, 538 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur2"},
-            {"rect": pygame.Rect(1200, 400 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
-                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur3"},
+            {"rect": pygame.Rect(2300, 538 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur2"},
             {"rect": pygame.Rect(1500, 460 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur3"},
             {"rect": pygame.Rect(1800, 300 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur4"},
-            {"rect": pygame.Rect(2100, 400 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
-                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur5"},
             {"rect": pygame.Rect(2700, 300 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur6"},
-            {"rect": pygame.Rect(3200, 460 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+            {"rect": pygame.Rect(3100, 300 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur7"},
+            {"rect": pygame.Rect(3800, 300 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur7"},
             {"rect": pygame.Rect(4000, 270 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur8"},
-            {"rect": pygame.Rect(4300, 340 - crab_img_collectible.get_height(), crab_img_collectible.get_width(),
-                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur9"},
+            {"rect": pygame.Rect(4450, 380- crab_img_collectible.get_height(), crab_img_collectible.get_width(),
+                                 crab_img_collectible.get_height()), "collected": False, "name": "Pinceur8"},
         ]
         enemies_world = [
             {"rect": pygame.Rect(200, 420 - 30, 40, 30), "name": "Gardien1", "original_x": 200, "patrol_range": 0,
-             "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(400, 360 - 30, 40, 30), "name": "Gardien2", "original_x": 400, "patrol_range": 0,
-             "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(1000, 420 - 30, 40, 30), "name": "Gardien3", "original_x": 1000, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
             {"rect": pygame.Rect(1500, 360 - 30, 40, 30), "name": "Gardien4", "original_x": 1500, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
@@ -501,6 +522,7 @@ def run_game(screen, level_chosen):
              "direction": 1, "speed_factor": 1.2},
             {"rect": pygame.Rect(4400, 420 - 30, 40, 30), "name": "Gardien10", "original_x": 4400, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
+
 
             {"rect": pygame.Rect(600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur1", "original_x": 600,
              "patrol_range": 150, "direction": 1, "speed_factor": 1},
