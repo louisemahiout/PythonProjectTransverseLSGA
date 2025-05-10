@@ -430,7 +430,7 @@ def run_game(screen, level_chosen):
 
     elif level_chosen == 2:
         collectible_type_name = "Pinceurs"
-        bot_speed_base = 2.2  # Plus rapide pour le niveau 2
+        bot_speed_base = 1.7  # Plus rapide pour le niveau 2
         platforms_world = [
             pygame.Rect(200, 420, 100, 20), pygame.Rect(400, 360, 100, 20),
             pygame.Rect(1000, 420, 100, 20), pygame.Rect(1500, 360, 100, 20),
