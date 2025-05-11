@@ -930,13 +930,11 @@ def run_game(screen, level_chosen):
             screen.blit(portal_img, portal_rect_screen.topleft)
 
         # Dessin des ennemis (coordonnées écran)
+        # Dessin des ennemis (coordonnées écran)
         for enemy_data in enemies_world:
             enemy_screen_rect = enemy_data["rect"].move(-scroll_x, 0)
             if enemy_screen_rect.colliderect(screen.get_rect()):  # Optimisation
-                enemy_img = enemy_data["image"]
-                if enemy_data["direction"] == -1:
-                    enemy_img = pygame.transform.flip(enemy_img, True, False)
-
+                enemy_img = enemy_data["image"] if enemy_data["direction"] == -1 else enemy_data["image_flipped"]
                 screen.blit(enemy_img, enemy_screen_rect.topleft)
 
         # Dessin du joueur
