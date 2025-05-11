@@ -188,7 +188,7 @@ def show_game_over_screen(screen, score):
         title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 225))
         screen.blit(title_text, title_rect)
         small_font = load_font(FONT_PATH, 20)  # Plus petit
-        score_text = small_font.render(f"Score final : {score}", True, RED)
+        score_text = small_font.render(f"Score final : {score}", True, BLACK)
         score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 330))
         screen.blit(score_text, score_rect)
 
@@ -224,7 +224,7 @@ def show_win_screen(screen, score):
         win_text = font.render("TU T'ES ENFUI!", True, BLACK)
         screen.blit(win_text, win_text.get_rect(center=(SCREEN_WIDTH // 1.85, 290)))
         small_font = load_font(FONT_PATH, 20)  # Plus petit
-        score_text = small_font.render(f"Score final : {score}", True, RED)
+        score_text = small_font.render(f"Score final : {score}", True, BLACK)
         score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 330))
         screen.blit(score_text, score_rect)
 
