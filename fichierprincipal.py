@@ -29,6 +29,10 @@ BACKGROUND_IMG_PATH_GAME2= "assetsaffichage/fond 5.jpg"
 PLAY_BUTTON_IMG_PATH = 'assetsaffichage/boutonplay.png'
 MENU_BUTTON_IMG_PATH = "assetsaffichage/boutonmenu.png"
 CRAB_COLLECTIBLE_IMG_PATH = "assetsaffichage/crabe.png"
+ENEMY_IMG_PATH = "assetsaffichage/ennemi.png"
+
+
+
 
 # Préfixes pour les animations du héros
 HERO_RUN_IMG_PATH_PREFIX = "Hero/Run ("
@@ -331,6 +335,8 @@ def run_game(screen, level_chosen):
 
     crab_img_collectible_orig = load_image(CRAB_COLLECTIBLE_IMG_PATH, alpha=True)
     crab_img_collectible = pygame.transform.scale(crab_img_collectible_orig, (PLAYER_WIDTH // 2, PLAYER_HEIGHT // 2))
+    enemy_image_orig = load_image(ENEMY_IMG_PATH, alpha=True)
+    enemy_image = pygame.transform.scale(enemy_image_orig, (40, 30))  # adapte la taille à celle des anciens rectangles
 
     portal_img = load_image("assetsaffichage/fin.png", alpha=True)
     portal_img = pygame.transform.scale(portal_img, (128, 128))  # Taille personnalisable
@@ -427,37 +433,37 @@ def run_game(screen, level_chosen):
                                  crab_img_collectible.get_height()), "collected": False, "name": "Carapatte9"},
         ]
         enemies_world = [  # Ajout de 'original_x', 'patrol_range', 'direction' pour le mouvement
-            {"rect": pygame.Rect(1700, 420 - 30, 40, 30), "name": "Bot3", "original_x": 1700, "patrol_range": 0,
+            {"rect": pygame.Rect(1700, 420 - 30, 40, 30), "name": "Bot3","image": enemy_image, "original_x": 1700, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(1900, 360 - 30, 40, 30), "name": "Bot4", "original_x": 1900, "patrol_range": 0,
+            {"rect": pygame.Rect(1900, 360 - 30, 40, 30), "name": "Bot4","image": enemy_image, "original_x": 1900, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(2800, 420 - 30, 40, 30), "name": "Bot6", "original_x": 2800, "patrol_range": 0,
+            {"rect": pygame.Rect(2800, 420 - 30, 40, 30), "name": "Bot6","image": enemy_image, "original_x": 2800, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(3000, 360 - 30, 40, 30), "name": "Bot7", "original_x": 3000, "patrol_range": 0,
+            {"rect": pygame.Rect(3000, 360 - 30, 40, 30), "name": "Bot7","image": enemy_image, "original_x": 3000, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(3600, 360 - 30, 40, 30), "name": "Bot7", "original_x": 3000, "patrol_range": 0,
+            {"rect": pygame.Rect(3600, 360 - 30, 40, 30), "name": "Bot7","image": enemy_image, "original_x": 3000, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(4000, 420 - 30, 40, 30), "name": "Bot10", "original_x": 4000, "patrol_range": 0,
+            {"rect": pygame.Rect(4000, 420 - 30, 40, 30), "name": "Bot10","image": enemy_image, "original_x": 4000, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(4200, 360 - 30, 40, 30), "name": "Bot11", "original_x": 4200, "patrol_range": 0,
+            {"rect": pygame.Rect(4200, 360 - 30, 40, 30), "name": "Bot11","image": enemy_image, "original_x": 4200, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(4800, 420 - 30, 40, 30), "name": "Bot13", "original_x": 4800, "patrol_range": 0,
+            {"rect": pygame.Rect(4800, 420 - 30, 40, 30), "name": "Bot13","image": enemy_image, "original_x": 4800, "patrol_range": 0,
              "direction": 1, "speed_factor": 1},
 
 
-            {"rect": pygame.Rect(600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol1", "original_x": 600,
+            {"rect": pygame.Rect(600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol1","image": enemy_image, "original_x": 600,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(1500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol2", "original_x": 1500,
+            {"rect": pygame.Rect(1500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol2","image": enemy_image, "original_x": 1500,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(2500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol3", "original_x": 2500,
+            {"rect": pygame.Rect(2500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol3","image": enemy_image, "original_x": 2500,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(3500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol4", "original_x": 3500,
+            {"rect": pygame.Rect(3500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol4","image": enemy_image, "original_x": 3500,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(4600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol5", "original_x": 4600,
+            {"rect": pygame.Rect(4600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol5","image": enemy_image, "original_x": 4600,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(4400, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol5", "original_x": 4400,
+            {"rect": pygame.Rect(4400, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol5","image": enemy_image, "original_x": 4400,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
-            {"rect": pygame.Rect(2200, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol5", "original_x": 2200,
+            {"rect": pygame.Rect(2200, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "BotSol5","image": enemy_image, "original_x": 2200,
              "patrol_range": 100, "direction": 1, "speed_factor": 0.8},
         ]
 
@@ -506,33 +512,33 @@ def run_game(screen, level_chosen):
                                  crab_img_collectible.get_height()), "collected": False, "name": "Pinceur8"},
         ]
         enemies_world = [
-            {"rect": pygame.Rect(200, 420 - 30, 40, 30), "name": "Gardien1", "original_x": 200, "patrol_range": 0,
+            {"rect": pygame.Rect(200, 420 - 30, 40, 30), "name": "Gardien1","image": enemy_image, "original_x": 200, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(1500, 360 - 30, 40, 30), "name": "Gardien4", "original_x": 1500, "patrol_range": 0,
+            {"rect": pygame.Rect(1500, 360 - 30, 40, 30), "name": "Gardien4","image": enemy_image, "original_x": 1500, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(2000, 300 - 30, 40, 30), "name": "Gardien5", "original_x": 2000, "patrol_range": 0,
+            {"rect": pygame.Rect(2000, 300 - 30, 40, 30), "name": "Gardien5","image": enemy_image, "original_x": 2000, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(2500, 420 - 30, 40, 30), "name": "Gardien6", "original_x": 2500, "patrol_range": 0,
+            {"rect": pygame.Rect(2500, 420 - 30, 40, 30), "name": "Gardien6","image": enemy_image, "original_x": 2500, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(2900, 360 - 30, 40, 30), "name": "Gardien7", "original_x": 2900, "patrol_range": 0,
+            {"rect": pygame.Rect(2900, 360 - 30, 40, 30), "name": "Gardien7","image": enemy_image, "original_x": 2900, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(3600, 420 - 30, 40, 30), "name": "Gardien8", "original_x": 3600, "patrol_range": 0,
+            {"rect": pygame.Rect(3600, 420 - 30, 40, 30), "name": "Gardien8","image": enemy_image, "original_x": 3600, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(3900, 360 - 30, 40, 30), "name": "Gardien9", "original_x": 3900, "patrol_range": 0,
+            {"rect": pygame.Rect(3900, 360 - 30, 40, 30), "name": "Gardien9","image": enemy_image, "original_x": 3900, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
-            {"rect": pygame.Rect(4400, 420 - 30, 40, 30), "name": "Gardien10", "original_x": 4400, "patrol_range": 0,
+            {"rect": pygame.Rect(4400, 420 - 30, 40, 30), "name": "Gardien10","image": enemy_image, "original_x": 4400, "patrol_range": 0,
              "direction": 1, "speed_factor": 1.2},
 
 
-            {"rect": pygame.Rect(600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur1", "original_x": 600,
+            {"rect": pygame.Rect(600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur1","image": enemy_image, "original_x": 600,
              "patrol_range": 150, "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(1500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur2", "original_x": 1500,
+            {"rect": pygame.Rect(1500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur2","image": enemy_image, "original_x": 1500,
              "patrol_range": 150, "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(2500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur3", "original_x": 2500,
+            {"rect": pygame.Rect(2500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur3","image": enemy_image, "original_x": 2500,
              "patrol_range": 150, "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(3500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur4", "original_x": 3500,
+            {"rect": pygame.Rect(3500, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur4","image": enemy_image, "original_x": 3500,
              "patrol_range": 150, "direction": 1, "speed_factor": 1},
-            {"rect": pygame.Rect(4600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur5", "original_x": 4600,
+            {"rect": pygame.Rect(4600, SCREEN_HEIGHT - 20 - 30, 40, 30), "name": "Patrouilleur5","image": enemy_image, "original_x": 4600,
              "patrol_range": 150, "direction": 1, "speed_factor": 1},
         ]
     # Ajuster la position Y des collectibles pour qu'ils soient POSÉS SUR le sol/plateforme
@@ -926,7 +932,7 @@ def run_game(screen, level_chosen):
         for enemy_data in enemies_world:
             enemy_screen_rect = enemy_data["rect"].move(-scroll_x, 0)
             if enemy_screen_rect.colliderect(screen.get_rect()):  # Optimisation
-                pygame.draw.rect(screen, BLUE_ENEMY, enemy_screen_rect)
+                screen.blit(enemy_data["image"], enemy_screen_rect.topleft)
 
         # Dessin du joueur
         if player_img_to_draw:
