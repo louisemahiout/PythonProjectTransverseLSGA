@@ -25,7 +25,7 @@ FONT_PATH = "assetsaffichage/PressStart2P.ttf"
 MUSIC_PATH = "assetsaffichage/musique.mp3"
 BACKGROUND_IMG_PATH_MENU = "assetsaffichage/fond1.jpg"
 BACKGROUND_IMG_PATH_GAME = "assetsaffichage/fond2.jpg"
-BACKGROUND_IMG_PATH_GAME2= "assetsaffichage/fond 5.jpg"
+BACKGROUND_IMG_PATH_GAME2= "assetsaffichage/palmier2.jpg"
 PLAY_BUTTON_IMG_PATH = 'assetsaffichage/boutonplay.png'
 MENU_BUTTON_IMG_PATH = "assetsaffichage/boutonmenu.png"
 CRAB_COLLECTIBLE_IMG_PATH = "assetsaffichage/crabe.png"
@@ -238,7 +238,7 @@ def show_win_screen(screen, score):
 
 def show_context(screen):
     # Charger l'image de fond
-    background = pygame.image.load("assetsaffichage/transverse.png").convert()
+    background = pygame.image.load("assetsaffichage/image_ennemie.jpg").convert()
     font = pygame.font.Font(FONT_PATH, 11)
 
     # Liste de textes à afficher progressivement
@@ -478,7 +478,7 @@ def run_game(screen, level_chosen):
         ]
 
     elif level_chosen == 2:
-        background_img_game = load_image(BACKGROUND_IMG_PATH_GAME)
+        background_img_game = load_image(BACKGROUND_IMG_PATH_GAME2)
         # Correction: flip horizontal pour boucle, pas vertical
         flipped_bg_img = pygame.transform.flip(background_img_game, True, False)
         bg_width = background_img_game.get_width()
