@@ -136,7 +136,7 @@ def choose_level(screen):
         title_bg_surface = pygame.Surface((title_rect.width + 20, title_rect.height + 20), pygame.SRCALPHA)
         title_bg_surface.fill((255, 255, 255, 180))
         screen.blit(title_bg_surface, (title_rect.x - 10, title_rect.y - 10))
-        screen.blit(title_text, title_rect)
+
 
         # Fonction pour dessiner les boutons de niveau
         def draw_level_button(rect, text):
@@ -156,7 +156,7 @@ def choose_level(screen):
         pygame.display.flip()
 
 
-def show_game_over_screen(screen):
+def show_game_over_screen(screen, score):
     background = load_image(BACKGROUND_IMG_PATH_MENU)  # Peut être un fond spécifique "game over"
     title_font = load_font(FONT_PATH, 36)
     button_font = load_font(FONT_PATH, 18)
@@ -174,12 +174,12 @@ def show_game_over_screen(screen):
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return "quit"
+                return "quit", score
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if restart_button_rect.collidepoint(event.pos):
-                    return "restart"
+                    return "restart", score
                 elif menu_button_rect.collidepoint(event.pos):
-                    return "menu"
+                    return "menu",score
 
         screen.blit(background, (0, 0))
         screen.blit(overlay, (0, 0))  # Appliquer l'assombrissement
@@ -187,6 +187,9 @@ def show_game_over_screen(screen):
         title_text = title_font.render("PERDU", True, RED)
         title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 225))
         screen.blit(title_text, title_rect)
+        score_text = title_font.render(f"Score final : {score}", True, BLACK)
+        score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 270))
+        screen.blit(score_text, score_rect)
 
         # Dessin des boutons
         pygame.draw.rect(screen, WHITE, restart_button_rect, border_radius=10)
@@ -202,7 +205,7 @@ def show_game_over_screen(screen):
 
         pygame.display.flip()
 
-def show_win_screen(screen):
+def show_win_screen(screen, score):
     background = load_image(BACKGROUND_IMG_PATH_MENU)
     font = load_font(FONT_PATH, 36)
     button_font = load_font(FONT_PATH, 20)
@@ -212,13 +215,16 @@ def show_win_screen(screen):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return "quit"
+                return "quit", score
             if event.type == pygame.MOUSEBUTTONDOWN and button_rect.collidepoint(event.pos):
-                return "menu"
+                return "menu",score
 
         screen.blit(background, (0, 0))
         win_text = font.render("TU T'ES ENFUI!", True, BLACK)
         screen.blit(win_text, win_text.get_rect(center=(SCREEN_WIDTH // 1.85, 290)))
+        score_text = font.render(f"Score final : {score}", True, BLACK)
+        score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 330))
+        screen.blit(score_text, score_rect)
 
         pygame.draw.rect(screen, WHITE, button_rect, border_radius=10)
         pygame.draw.rect(screen, BLACK, button_rect, 2, border_radius=10)
@@ -353,7 +359,7 @@ def run_game(screen, level_chosen):
                                             (PLAYER_WIDTH, PLAYER_HEIGHT)) for i in range(1, 17)]  # 16 frames
     except Exception as e:  # Plus générique si une image manque dans la séquence
         print(f"Erreur chargement animation joueur: {e}")
-        return "menu"  # Retour au menu si animation non chargée
+        return "menu"   # Retour au menu si animation non chargée
 
     # --- Variables du joueur ---
     crab_joueur_x_screen = 100  # Position à l'écran
@@ -383,6 +389,7 @@ def run_game(screen, level_chosen):
     collectibles_world = []
     enemies_world = []
     collectibles_collected_count = 0
+    score = 0
     collectible_type_name = ""
     bot_speed_base = 0  # Sera défini par niveau
 
@@ -587,11 +594,11 @@ def run_game(screen, level_chosen):
         # --- Gestion des événements ---
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return "quit"
+                return "quit",score
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Clic gauche
                     if menu_button_rect.collidepoint(event.pos):
-                        return "menu"
+                        return "menu",score
 
                     player_rect_screen = pygame.Rect(crab_joueur_x_screen, crab_joueur_y_screen, PLAYER_WIDTH,
                                                      PLAYER_HEIGHT)
@@ -722,7 +729,7 @@ def run_game(screen, level_chosen):
         if player_rect_world.top > SCREEN_HEIGHT + 200:  # Une marge sous l'écran
             lives -= 1
             if lives <= 0:
-                action_game_over = show_game_over_screen(screen)
+                action_game_over = show_game_over_screen(screen,score)
                 return action_game_over  # "restart", "menu", ou "quit"
             else:  # Réinitialiser la position du joueur
                 crab_joueur_x_screen = 100
@@ -738,6 +745,7 @@ def run_game(screen, level_chosen):
             if not item_data["collected"] and player_rect_world.colliderect(item_data["rect"]):
                 item_data["collected"] = True
                 collectibles_collected_count += 1
+                score += 50
                 print(
                     f"{collectible_type_name[:-1]} collecté ! Total : {collectibles_collected_count}, Nom: {item_data['name']}")
                 # Ajouter un son de collecte ici si désiré
@@ -782,6 +790,7 @@ def run_game(screen, level_chosen):
                     print(f"Balle a touché {enemy_data['name']}")
                     enemies_world.remove(enemy_data)
                     ball_pos_world = None  # La balle disparaît
+                    score += 100
                     # Ajouter son/effet d'explosion
                     break  # Une balle ne touche qu'un ennemi
 
@@ -860,7 +869,7 @@ def run_game(screen, level_chosen):
                                                    crab_joueur_x_screen + 30)  # Recul droit
 
                     if lives <= 0:
-                        action_game_over = show_game_over_screen(screen)
+                        action_game_over = show_game_over_screen(screen,score)
                         return action_game_over  # "restart", "menu", ou "quit"
                     break  # Une seule collision par frame suffit
 
@@ -896,7 +905,7 @@ def run_game(screen, level_chosen):
         screen.fill(WHITE)  # Couleur de fond par défaut si l'image de fond ne couvre pas tout
         # --- Collision avec le portail de fin ---
         if player_rect_world.colliderect(portal_rect_world):
-            return "win"
+            return "win", score
 
         # Dessin du fond en boucle (scroll parallax simple)
         for i in range(-1, int(SCREEN_WIDTH / bg_width) + 2):
@@ -970,7 +979,8 @@ def run_game(screen, level_chosen):
 
         collectible_text_surf = ui_font.render(f"{collectible_type_name}: {collectibles_collected_count}", True, BLACK)
         screen.blit(collectible_text_surf, (20, 50))
-
+        score_text_surf = ui_font.render(f"Score: {score}", True, BLACK)
+        screen.blit(score_text_surf, (20, 80))
         # Affichage du texte tutoriel
         if show_tutorial_text:
             for i, line in enumerate(tutorial_lines):
@@ -986,7 +996,7 @@ def run_game(screen, level_chosen):
 
         pygame.display.flip()  # Mettre à jour tout l'écran
 
-    return "menu"  # Par défaut, si la boucle se termine autrement, retourner au menu
+    return "menu",score  # Par défaut, si la boucle se termine autrement, retourner au menu
 
 
 # === Boucle principale de l'application ===
@@ -1014,13 +1024,13 @@ def main():
             elif current_game_state == "run_game":
                 if selected_level == 1:  # Si le niveau 1 est choisi, on affiche la contextualisation
                     show_context(screen)
-                game_outcome = run_game(screen, selected_level)  # Utilise selected_level
+                game_outcome, score = run_game(screen, selected_level)  # Utilise selected_level
                 if game_outcome == "menu":
                     current_game_state = "menu"
                 elif game_outcome == "restart":
                     current_game_state = "run_game"  # Reste dans cet état pour relancer avec selected_level
                 elif game_outcome == "win":
-                    next_action = show_win_screen(screen)
+                    next_action = show_win_screen(screen, score)
                     if next_action == "menu":
                         current_game_state = "menu"
                     elif next_action == "quit":
