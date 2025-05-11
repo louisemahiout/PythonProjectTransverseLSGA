@@ -180,7 +180,7 @@ def show_game_over_screen(screen):
         screen.blit(background, (0, 0))
         screen.blit(overlay, (0, 0))  # Appliquer l'assombrissement
 
-        title_text = title_font.render("GAME OVER", True, RED)
+        title_text = title_font.render("PERDU", True, RED)
         title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 225))
         screen.blit(title_text, title_rect)
 
@@ -213,8 +213,8 @@ def show_win_screen(screen):
                 return "menu"
 
         screen.blit(background, (0, 0))
-        win_text = font.render("TU T'ES ENFUIS!", True, (0, 200, 0))
-        screen.blit(win_text, win_text.get_rect(center=(SCREEN_WIDTH // 2, 300)))
+        win_text = font.render("TU T'ES ENFUI!", True, BLACK)
+        screen.blit(win_text, win_text.get_rect(center=(SCREEN_WIDTH // 1.85, 290)))
 
         pygame.draw.rect(screen, WHITE, button_rect, border_radius=10)
         pygame.draw.rect(screen, BLACK, button_rect, 2, border_radius=10)
