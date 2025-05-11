@@ -136,7 +136,7 @@ def choose_level(screen):
         title_bg_surface = pygame.Surface((title_rect.width + 20, title_rect.height + 20), pygame.SRCALPHA)
         title_bg_surface.fill((255, 255, 255, 180))
         screen.blit(title_bg_surface, (title_rect.x - 10, title_rect.y - 10))
-
+        screen.blit(title_text, title_rect)
 
         # Fonction pour dessiner les boutons de niveau
         def draw_level_button(rect, text):
@@ -187,8 +187,9 @@ def show_game_over_screen(screen, score):
         title_text = title_font.render("PERDU", True, RED)
         title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, 225))
         screen.blit(title_text, title_rect)
-        score_text = title_font.render(f"Score final : {score}", True, BLACK)
-        score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 270))
+        small_font = load_font(FONT_PATH, 20)  # Plus petit
+        score_text = small_font.render(f"Score final : {score}", True, RED)
+        score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 330))
         screen.blit(score_text, score_rect)
 
         # Dessin des boutons
@@ -222,7 +223,8 @@ def show_win_screen(screen, score):
         screen.blit(background, (0, 0))
         win_text = font.render("TU T'ES ENFUI!", True, BLACK)
         screen.blit(win_text, win_text.get_rect(center=(SCREEN_WIDTH // 1.85, 290)))
-        score_text = font.render(f"Score final : {score}", True, BLACK)
+        small_font = load_font(FONT_PATH, 20)  # Plus petit
+        score_text = small_font.render(f"Score final : {score}", True, RED)
         score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 330))
         screen.blit(score_text, score_rect)
 
@@ -1027,16 +1029,19 @@ def main():
                 game_outcome, score = run_game(screen, selected_level)  # Utilise selected_level
                 if game_outcome == "menu":
                     current_game_state = "menu"
+                    selected_level = None
                 elif game_outcome == "restart":
                     current_game_state = "run_game"  # Reste dans cet état pour relancer avec selected_level
                 elif game_outcome == "win":
-                    next_action = show_win_screen(screen, score)
-                    if next_action == "menu":
+                    action_win, score = show_win_screen(screen, score)
+                    if action_win == "menu":
+                        selected_level = None  # ← Ajouté pour éviter relancer le niveau
                         current_game_state = "menu"
-                    elif next_action == "quit":
+                    elif action_win == "quit":
                         break
 
-                elif game_outcome == "quit":
+
+            elif game_outcome == "quit":
                     break
             else:
                 print(f"État de jeu inconnu: {current_game_state}")
