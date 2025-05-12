@@ -291,19 +291,6 @@ def run_game(screen,level_chosen,MENU_BUTTON_IMG_PATH,SCREEN_WIDTH,CRAB_COLLECTI
         # Position Y de départ pour le texte du tutoriel
         tutorial_start_y = 120
 
-        # --- Fonction pour dessiner la flèche de visée ---
-        def draw_aiming_arrow(surface, start_pos_screen, mouse_pos_screen):
-            pygame.draw.line(surface, BLACK, start_pos_screen, mouse_pos_screen, 3)
-            angle = math.atan2(mouse_pos_screen[1] - start_pos_screen[1], mouse_pos_screen[0] - start_pos_screen[0])
-            arrow_size = 10
-            # Pointe gauche de la flèche
-            left_x = mouse_pos_screen[0] - arrow_size * math.cos(angle + math.pi / 6)
-            left_y = mouse_pos_screen[1] - arrow_size * math.sin(angle + math.pi / 6)
-            # Pointe droite de la flèche
-            right_x = mouse_pos_screen[0] - arrow_size * math.cos(angle - math.pi / 6)
-            right_y = mouse_pos_screen[1] - arrow_size * math.sin(angle - math.pi / 6)
-            pygame.draw.polygon(surface, BLACK, [mouse_pos_screen, (left_x, left_y), (right_x, right_y)])
-
         # --- Boucle de jeu principale ---
         game_running = True
         while game_running:
@@ -690,7 +677,7 @@ def run_game(screen,level_chosen,MENU_BUTTON_IMG_PATH,SCREEN_WIDTH,CRAB_COLLECTI
             if selecting_trajectory:
                 player_center_on_screen = (
                     crab_joueur_x_screen + PLAYER_WIDTH // 2, crab_joueur_y_screen + PLAYER_HEIGHT // 2)
-                draw_aiming_arrow(screen, player_center_on_screen, pygame.mouse.get_pos())
+                draw_aiming_arrow(screen, player_center_on_screen, pygame.mouse.get_pos(),BLACK)
 
             # --- Dessin de l'Interface Utilisateur (UI) ---
             screen.blit(menu_button_img, menu_button_rect)
