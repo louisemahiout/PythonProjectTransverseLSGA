@@ -22,6 +22,7 @@ def show_game_over_screen(screen, score, BACKGROUND_IMG_PATH_MENU, FONT_PATH, SC
         # Gère les événements
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.quit()
                 return "quit", score  # Quitter le jeu
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if restart_button_rect.collidepoint(event.pos):
@@ -72,6 +73,7 @@ def show_win_screen(screen, score, BACKGROUND_IMG_PATH_MENU, FONT_PATH, SCREEN_W
         # Gère les événements
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.quit()
                 return "quit", score  # Quitter le jeu
             if event.type == pygame.MOUSEBUTTONDOWN and button_rect.collidepoint(event.pos):
                 return "menu", score  # Retourner au menu principal

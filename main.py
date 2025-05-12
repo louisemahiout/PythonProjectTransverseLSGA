@@ -103,6 +103,3 @@ while True:
 # Fermeture propre de Pygame
 pygame.quit()
 
-# Protection pour l’exécution directe du script
-if __name__ == '__main__':
-    main()

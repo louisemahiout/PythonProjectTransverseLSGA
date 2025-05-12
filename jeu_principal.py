@@ -313,7 +313,8 @@ def run_game(screen,level_chosen,MENU_BUTTON_IMG_PATH,SCREEN_WIDTH,CRAB_COLLECTI
             # --- Gestion des événements ---
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return "quit", score
+                    pygame.quit()
+                    return "quit",score  # Quitter le jeu si la fenêtre est fermée
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # Clic gauche
                         if menu_button_rect.collidepoint(event.pos):

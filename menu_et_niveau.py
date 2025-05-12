@@ -29,6 +29,7 @@ def show_menu(screen, BACKGROUND_IMG_PATH_MENU, PLAY_BUTTON_IMG_PATH, SCREEN_WID
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.quit()
                 return "quit"  # Fermer le jeu
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button_rect.collidepoint(event.pos):
@@ -88,6 +89,7 @@ def choose_level(screen,BACKGROUND_IMG_PATH_MENU,FONT_PATH,BLACK,SCREEN_WIDTH):
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.quit()
                 return "quit"  # Quitter le jeu si la fenêtre est fermée
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if level1_rect.collidepoint(event.pos):
