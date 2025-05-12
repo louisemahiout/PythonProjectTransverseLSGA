@@ -1,3 +1,5 @@
+# Code de secour tout le code assembler
+
 import pygame
 import math
 import sys
